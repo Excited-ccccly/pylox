@@ -3,10 +3,6 @@ from pylox.token import Token, TokenType, lexeme_token_type_dict
 from pylox.error_handler import error_handler
 
 class Scanner(object):
-  tokens = []
-  start = 0
-  current = 0
-  line = 1
 
   def __init__(self, source: str):
     """
@@ -14,6 +10,10 @@ class Scanner(object):
     """
     self.source = source
     self.source_length = len(self.source)
+    self.tokens = []
+    self.start = 0
+    self.current = 0
+    self.line = 1    
 
   def scan_tokens(self) -> List[Token]:
     """Lexing
