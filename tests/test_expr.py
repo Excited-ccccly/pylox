@@ -1,7 +1,7 @@
 from unittest import TestCase
 from pylox.expr import Assign, Binary, Unary, Literal, Grouping
 from pylox.token import Token, TokenType
-from pylox.visitor import AstPrinter
+from pylox.ast_printer import AstPrinter
 
 class TestExpr(TestCase):
 

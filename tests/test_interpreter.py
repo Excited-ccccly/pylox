@@ -3,18 +3,16 @@ from unittest import TestCase
 from pylox.scanner import Scanner
 from pylox.parser import Parser
 from pylox.ast_printer import AstPrinter
+from pylox.interpreter import Interpreter
 
 class TestParser(TestCase):
   def setUp(self):
     with open("tests/data/test_parser.lox") as f:
       scanner = Scanner(f.read())
       tokens = scanner.scan_tokens()
-      self.parser = Parser(tokens)
+      parser = Parser(tokens)
+      self.expr = parser.parse()
       
   def test_expr_parser(self):
-    expr = self.parser.parse()
-    s = expr.accept(AstPrinter())
-    self.assertEqual('(+ (+ 3.0 (/ 6.0 (- 3.0))) (- 1.0))', s)
-
-  def tearDown(self):
-    self.parser = None
+    result = Interpreter().interprete(self.expr)
+    self.assertEqual(0, result)
