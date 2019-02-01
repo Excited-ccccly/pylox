@@ -11,5 +11,5 @@ class TestExpr(TestCase):
     expr = Binary(left=unary,
                   operator=Token(TokenType.STAR, "*", None, 1),
                   right=Grouping(expression=Literal(value=45.67)))
-    self.assertEqual('(* (- 123) (group 45.67))', AstPrinter().print(expr))
+    self.assertEqual('(* (- 123) (group 45.67))', expr.accept(AstPrinter()))
       
