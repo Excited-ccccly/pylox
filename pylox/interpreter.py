@@ -1,16 +1,21 @@
-from pylox.visitor import ExprVisitor
+from pylox.expr import ExprVisitor
+from pylox.stmt import StmtVisitor
 from pylox.token import Token, TokenType
 
-class Interpreter(ExprVisitor):
+class Interpreter(ExprVisitor, StmtVisitor):
 
   class RuntimeError(Exception):
     pass
 
-  def interprete(self, expr):
+  def interprete(self, stmts):
     try:
-      return self.evaluate(expr)
+      for stmt in stmts:
+        self.execute(stmt)
     except Interpreter.RuntimeError as e:
       print(e)
+
+  def execute(self, stmt):
+    stmt.accept(self)
 
   def evaluate(self, expr):
     return expr.accept(self)    
@@ -66,6 +71,13 @@ class Interpreter(ExprVisitor):
     elif expr.operator.type == TokenType.BANG:
       return not self.__is_truthy(right)
     return None
+
+  def visitPrintStmt(self, stmt):
+    value = self.evaluate(stmt.expression)
+    print(value)
+
+  def visitExpressionStmt(self, stmt):
+    self.evaluate(stmt.expression)
 
   def __is_truthy(self, obj):
     if obj == None: return False

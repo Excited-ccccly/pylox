@@ -5,7 +5,8 @@ import sys
 import click
 
 from pylox.scanner import Scanner
-
+from pylox.parser import Parser
+from pylox.interpreter import Interpreter
 
 @click.command()
 @click.argument('file', type=click.Path(exists=True), required=False)
@@ -30,8 +31,9 @@ def run_file(file):
 
 
 def run(source: str):
-  scanner = Scanner(source)
-  print(scanner.scan_tokens())
+  tokens = Scanner(source).scan_tokens()
+  stmts = Parser(tokens).parse()
+  Interpreter().interprete(stmts)
 
 
 if __name__ == "__main__":
