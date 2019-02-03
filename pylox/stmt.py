@@ -55,4 +55,7 @@ class StmtVisitor:
   @abstractmethod
   def visitVarStmt(self, expr):
     raise NotImplementedError()  
+  @abstractmethod
+  def visitBlockStmt(self, expr):
+    raise NotImplementedError()      
   

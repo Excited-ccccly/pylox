@@ -6,16 +6,16 @@ from pylox.ast_printer import AstPrinter
 from pylox.interpreter import Interpreter
 
 class TestInterpreter(TestCase):
-  def setUp(self):
-    with open("tests/data/test_interpreter.lox") as f:
-      scanner = Scanner(f.read())
-      tokens = scanner.scan_tokens()
-      parser = Parser(tokens)
-      self.stmts = parser.parse()
       
   def test_stmts_interpret(self):
-    Interpreter().interprete(self.stmts)
+    stmts = Parser(Scanner("var a=1;var b=2;print a+b;").scan_tokens()).parse()
+    Interpreter().interprete(stmts)
 
   def test_assign_interpret(self):
     stmts = Parser(Scanner("var a=1;a=2;print a;").scan_tokens()).parse()
     Interpreter().interprete(stmts)
+
+  def test_scopes(self):
+    with open("tests/data/test_interpreter.lox") as f:
+      stmts = Parser(Scanner(f.read()).scan_tokens()).parse()
+      Interpreter().interprete(stmts)

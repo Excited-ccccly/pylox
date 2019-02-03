@@ -1,7 +1,7 @@
 from typing import List
 from pylox.token import Token, TokenType
 from pylox.expr import Expr, Binary, Unary, Literal, Grouping, Variable, Assign
-from pylox.stmt import Print, Expression, Var
+from pylox.stmt import Print, Expression, Var, Block
 from pylox.error import ParseError, error_handler
 
 class Parser:
@@ -34,15 +34,22 @@ class Parser:
     return Var(name=name, initializer=initializer)
     
   def __stmt(self):
-    if self.__match(TokenType.PRINT): return self.__print_stmt()
+    if self.__match_then_advance(TokenType.PRINT): return self.__print_stmt()
+    if self.__match_then_advance(TokenType.LEFT_BRACE): return self.__block()
     return self.__expr_stmt()
 
   def __print_stmt(self):
-    self.__advance()
     expr = self.__expression()
     self.__consume(expected=TokenType.SEMICOLON, err_msg="Expect ';' after statement.")
     return Print(expr)
-
+  
+  def __block(self):
+    stmts = []
+    while not self.__match(TokenType.RIGHT_BRACE) and not self.__is_at_end():
+      stmts.append(self.__declaration())
+    self.__consume(TokenType.RIGHT_BRACE, "Expect '}' after block.")
+    return Block(statements=stmts)
+    
   def __expr_stmt(self):
     expr = self.__expression()
     self.__consume(expected=TokenType.SEMICOLON, err_msg="Expect ';' after statement.")

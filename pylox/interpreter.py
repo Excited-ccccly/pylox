@@ -86,6 +86,16 @@ class Interpreter(ExprVisitor, StmtVisitor):
     value = self.evaluate(stmt.expression)
     print(value)
 
+  def visitBlockStmt(self, stmt):
+    block_environment = Environment(enclosing=self.environment)
+    previous = self.environment
+    try:
+      self.environment = block_environment
+      for s in stmt.statements:
+        self.execute(s)
+    finally:
+      self.environment = previous
+      
   def visitExpressionStmt(self, stmt):
     self.evaluate(stmt.expression)
 

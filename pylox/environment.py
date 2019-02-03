@@ -2,7 +2,7 @@ from pylox.error import RuntimeError
 from pylox.token import Token
 
 class Environment:
-  def __init__(self, enclosing: Environment = None):
+  def __init__(self, enclosing = None):
     self.values = {}
     self.enclosing: Environment = enclosing
 
