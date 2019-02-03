@@ -115,6 +115,11 @@ class Interpreter(ExprVisitor, StmtVisitor):
       self.execute(stmt.then_branch)
     elif stmt.else_branch:
       self.execute(stmt.else_branch)
+  
+  def visitWhileStmt(self, stmt):
+    c = self.evaluate(stmt.condition)
+    while self.__is_truthy(c):
+      self.execute(stmt.body)
 
   def visitVarStmt(self, stmt):
     value = None

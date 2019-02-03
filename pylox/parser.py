@@ -1,7 +1,7 @@
 from typing import List
 from pylox.token import Token, TokenType
 from pylox.expr import Expr, Binary, Unary, Literal, Grouping, Variable, Assign, Logical
-from pylox.stmt import Print, Expression, Var, Block, If
+from pylox.stmt import Print, Expression, Var, Block, If, While
 from pylox.error import ParseError, error_handler
 
 class Parser:
@@ -37,6 +37,7 @@ class Parser:
     if self.__match_then_advance(TokenType.PRINT): return self.__print_stmt()
     if self.__match_then_advance(TokenType.LEFT_BRACE): return self.__block()
     if self.__match_then_advance(TokenType.IF): return self.__if_stmt()
+    if self.__match_then_advance(TokenType.WHILE): return self.__while_stmt()
     return self.__expr_stmt()
 
   def __print_stmt(self):
@@ -60,6 +61,13 @@ class Parser:
     if self.__match_then_advance(TokenType.ELSE):
       else_branch = self.__stmt()
     return If(condition, then_branch, else_branch)
+
+  def __while_stmt(self):
+    self.__consume(TokenType.LEFT_PAREN, "Expect '(' after 'if'.")
+    condition = self.__expression()
+    self.__consume(TokenType.RIGHT_PAREN, "Expect ')' after if condition.")
+    body = self.__stmt()
+    return While(condition, body)
 
   def __expr_stmt(self):
     expr = self.__expression()
