@@ -7,7 +7,13 @@ class Environment:
   def define(self, name: str, value):
     self.values[name] = value
 
-  def get(self, name: Token):
-    if self.values.__contains__(name.lexeme):
-      return self.values[name.lexeme]
-    raise RuntimeError(f'Undefined variable: {name.lexeme}')
+  def assign(self, name: str, value):
+    if self.values.__contains__(name):
+      self.values[name] = value
+      return
+    raise RuntimeError(f'Undefined variable: {name}')      
+
+  def get(self, token: Token):
+    if self.values.__contains__(token.lexeme):
+      return self.values[token.lexeme]
+    raise RuntimeError(f'Undefined variable: {token.lexeme}')

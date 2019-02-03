@@ -1,8 +1,8 @@
 from typing import List
 from pylox.token import Token, TokenType
-from pylox.expr import Expr, Binary, Unary, Literal, Grouping, Variable
+from pylox.expr import Expr, Binary, Unary, Literal, Grouping, Variable, Assign
 from pylox.stmt import Print, Expression, Var
-from pylox.error import ParseError
+from pylox.error import ParseError, error_handler
 
 class Parser:
 
@@ -49,7 +49,19 @@ class Parser:
     return Expression(expr)
       
   def __expression(self) -> Expr:
-    return self.__equality()
+    return self.__assignment()
+
+  def __assignment(self) -> Expr:
+    expr = self.__equality()
+    if self.__match(TokenType.EQUAL):
+      equals: Token = self.__peek()
+      self.__advance()
+      value: Expr = self.__assignment()
+      if isinstance(expr, Variable):
+        name: Token = expr.name
+        return Assign(name, value)
+      error_handler.parse_error(equals, "Invalid assignment target.")
+    return expr
 
   def __equality(self) -> Expr:
     expr = self.__comparison()

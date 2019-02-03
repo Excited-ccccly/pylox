@@ -15,3 +15,7 @@ class TestInterpreter(TestCase):
       
   def test_stmts_interpret(self):
     Interpreter().interprete(self.stmts)
+
+  def test_assign_interpret(self):
+    stmts = Parser(Scanner("var a=1;a=2;print a;").scan_tokens()).parse()
+    Interpreter().interprete(stmts)

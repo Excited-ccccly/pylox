@@ -22,6 +22,11 @@ class Interpreter(ExprVisitor, StmtVisitor):
   def evaluate(self, expr):
     return expr.accept(self)
 
+  def visitAssignExpr(self, expr):
+    value = self.evaluate(expr.value)
+    self.environment.assign(expr.name.lexeme, value)
+    return value
+
   def visitBinaryExpr(self, expr):
     left = self.evaluate(expr.left)
     right = self.evaluate(expr.right)
