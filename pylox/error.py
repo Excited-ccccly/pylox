@@ -7,3 +7,9 @@ class ErrorHandler(object):
     self.had_error = True
 
 error_handler = ErrorHandler()
+
+class ParseError(Exception):
+  pass
+
+class RuntimeError(Exception):
+  pass

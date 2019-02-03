@@ -12,7 +12,7 @@ class TestParser(TestCase):
       self.parser = Parser(tokens)
       
   def test_expr_parser(self):
-    expr = self.parser.parse()
+    expr = self.parser.parse()[0].expression
     s = expr.accept(AstPrinter())
     self.assertEqual('(+ (+ 3.0 (/ 6.0 (- 3.0))) (- 1.0))', s)
 

@@ -5,14 +5,13 @@ from pylox.parser import Parser
 from pylox.ast_printer import AstPrinter
 from pylox.interpreter import Interpreter
 
-class TestParser(TestCase):
+class TestInterpreter(TestCase):
   def setUp(self):
-    with open("tests/data/test_parser.lox") as f:
+    with open("tests/data/test_interpreter.lox") as f:
       scanner = Scanner(f.read())
       tokens = scanner.scan_tokens()
       parser = Parser(tokens)
-      self.expr = parser.parse()
+      self.stmts = parser.parse()
       
-  def test_expr_parser(self):
-    result = Interpreter().interprete(self.expr)
-    self.assertEqual(0, result)
+  def test_stmts_interpret(self):
+    Interpreter().interprete(self.stmts)

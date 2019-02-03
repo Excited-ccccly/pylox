@@ -1,12 +1,10 @@
 from typing import List
 from pylox.token import Token, TokenType
-from pylox.expr import Expr, Binary, Unary, Literal, Grouping
-from pylox.stmt import Print, Expression
+from pylox.expr import Expr, Binary, Unary, Literal, Grouping, Variable
+from pylox.stmt import Print, Expression, Var
+from pylox.error import ParseError
 
 class Parser:
-
-  class ParseError(Exception):
-    pass
 
   def __init__(self, tokens: List[Token]):
     self.current = 0
@@ -14,14 +12,27 @@ class Parser:
     self.token_count = len(tokens)
 
   def parse(self):
-    try:
-      stmts = []
-      while not self.__is_at_end():
-        stmts.append(self.__stmt())
-      return stmts
-    except Parser.ParseError:
-      return None
+    stmts = []
+    while not self.__is_at_end():
+      stmts.append(self.__declaration())
+    return stmts
 
+  def __declaration(self):
+    try:
+      if self.__match(TokenType.VAR): return self.__var_declaration()
+      return self.__stmt()
+    except ParseError:
+      self.__synchronize()
+
+  def __var_declaration(self):
+    self.__advance()
+    name: Token = self.__consume(TokenType.IDENTIFIER, err_msg="Expect variable name")
+    initializer: Expr = None
+    if self.__match_then_advance(TokenType.EQUAL):
+      initializer = self.__expression()
+    self.__consume(TokenType.SEMICOLON, "Expect ';' after variable declaration.")
+    return Var(name=name, initializer=initializer)
+    
   def __stmt(self):
     if self.__match(TokenType.PRINT): return self.__print_stmt()
     return self.__expr_stmt()
@@ -29,21 +40,14 @@ class Parser:
   def __print_stmt(self):
     self.__advance()
     expr = self.__expression()
-    self.__consume(expected=TokenType.SEMICOLON, msg="Expect ';' after statement.")
+    self.__consume(expected=TokenType.SEMICOLON, err_msg="Expect ';' after statement.")
     return Print(expr)
 
   def __expr_stmt(self):
     expr = self.__expression()
-    self.__consume(expected=TokenType.SEMICOLON, msg="Expect ';' after statement.")
+    self.__consume(expected=TokenType.SEMICOLON, err_msg="Expect ';' after statement.")
     return Expression(expr)
       
-
-  def __consume(self, expected: TokenType, msg: str):
-    if self.__match(expected):
-      self.__advance()
-    else:
-      raise Parser.ParseError(msg)    
-
   def __expression(self) -> Expr:
     return self.__equality()
 
@@ -92,14 +96,11 @@ class Parser:
     return self.__primary()
 
   def __primary(self):
-    if self.__match(TokenType.TRUE):
-      self.__advance()
+    if self.__match_then_advance(TokenType.TRUE):
       return Literal(True)
-    if self.__match(TokenType.FALSE):
-      self.__advance()
+    if self.__match_then_advance(TokenType.FALSE):
       return Literal(False)
-    if self.__match(TokenType.NIL):
-      self.__advance()
+    if self.__match_then_advance(TokenType.NIL):
       return Literal(None)
     if self.__match(TokenType.STRING, TokenType.NUMBER):
       value = self.__peek().literal
@@ -108,16 +109,16 @@ class Parser:
     if self.__match(TokenType.LEFT_PAREN):
       expr = self.__expression()
       self.__advance()
-      if self.__match(TokenType.RIGHT_PAREN):
-        self.__advance()
-      else:
-        raise Parser.ParseError("Expect ')' after expression.")
+      self.__consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.")
       return Grouping(expr)
+    if self.__match(TokenType.IDENTIFIER):
+      variable = self.__peek()
+      self.__advance()
+      return Variable(name=variable)
 
   def __synchronize(self):
     while self.__is_at_end():
-      if self.__match(TokenType.SEMICOLON):
-        self.__advance()
+      if self.__match_then_advance(TokenType.SEMICOLON):
         return
       if self.__match(TokenType.CLASS, TokenType.FUN, TokenType.VAR, TokenType.FOR,
                       TokenType.IF, TokenType.WHILE, TokenType.PRINT, TokenType.RETURN):
@@ -127,6 +128,20 @@ class Parser:
   def __match(self, *types) -> bool:
     return any([self.__check(t) for t in types])
 
+  def __match_then_advance(self, *types) -> bool:
+    if self.__match(*types):
+      self.__advance()
+      return True
+    return False
+
+  def __consume(self, expected: TokenType, err_msg: str):
+    if self.__match(expected):
+      token = self.__peek()
+      self.__advance()
+      return token
+    else:
+      raise ParseError(err_msg)    
+  
   def __check(self, token_type: TokenType) -> bool:
     if self.__is_at_end(): return False
     return self.__peek().type == token_type

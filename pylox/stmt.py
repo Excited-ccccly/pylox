@@ -52,4 +52,7 @@ class StmtVisitor:
   @abstractmethod
   def visitPrintStmt(self, expr):
     raise NotImplementedError()
+  @abstractmethod
+  def visitVarStmt(self, expr):
+    raise NotImplementedError()  
   

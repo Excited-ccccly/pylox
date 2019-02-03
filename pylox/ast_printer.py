@@ -1,6 +1,6 @@
 from pylox.expr import Expr
 from pylox.token import Token
-from pylox.visitor import ExprVisitor
+from pylox.expr import ExprVisitor
 
 class AstPrinter(ExprVisitor):
   def print(self, expr: Expr):

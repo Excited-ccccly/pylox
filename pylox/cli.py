@@ -29,11 +29,11 @@ def run_file(file):
   with open(file) as f:
       run(f.read())
 
-
+interpreter = Interpreter()
 def run(source: str):
   tokens = Scanner(source).scan_tokens()
   stmts = Parser(tokens).parse()
-  Interpreter().interprete(stmts)
+  interpreter.interprete(stmts)
 
 
 if __name__ == "__main__":
