@@ -1,7 +1,7 @@
 from typing import List
 from pylox.token import Token, TokenType
-from pylox.expr import Expr, Binary, Unary, Literal, Grouping, Variable, Assign
-from pylox.stmt import Print, Expression, Var, Block
+from pylox.expr import Expr, Binary, Unary, Literal, Grouping, Variable, Assign, Logical
+from pylox.stmt import Print, Expression, Var, Block, If
 from pylox.error import ParseError, error_handler
 
 class Parser:
@@ -36,6 +36,7 @@ class Parser:
   def __stmt(self):
     if self.__match_then_advance(TokenType.PRINT): return self.__print_stmt()
     if self.__match_then_advance(TokenType.LEFT_BRACE): return self.__block()
+    if self.__match_then_advance(TokenType.IF): return self.__if_stmt()
     return self.__expr_stmt()
 
   def __print_stmt(self):
@@ -49,7 +50,17 @@ class Parser:
       stmts.append(self.__declaration())
     self.__consume(TokenType.RIGHT_BRACE, "Expect '}' after block.")
     return Block(statements=stmts)
-    
+  
+  def __if_stmt(self):
+    self.__consume(TokenType.LEFT_PAREN, "Expect '(' after 'if'.")
+    condition = self.__expression()
+    self.__consume(TokenType.RIGHT_PAREN, "Expect ')' after if condition.")
+    then_branch = self.__stmt()
+    else_branch = None
+    if self.__match_then_advance(TokenType.ELSE):
+      else_branch = self.__stmt()
+    return If(condition, then_branch, else_branch)
+
   def __expr_stmt(self):
     expr = self.__expression()
     self.__consume(expected=TokenType.SEMICOLON, err_msg="Expect ';' after statement.")
@@ -59,7 +70,7 @@ class Parser:
     return self.__assignment()
 
   def __assignment(self) -> Expr:
-    expr = self.__equality()
+    expr = self.__logic_or()
     if self.__match(TokenType.EQUAL):
       equals: Token = self.__peek()
       self.__advance()
@@ -69,6 +80,25 @@ class Parser:
         return Assign(name, value)
       error_handler.parse_error(equals, "Invalid assignment target.")
     return expr
+
+  def __logic_or(self) -> Expr:
+    left = self.__logic_and()
+    while self.__match(TokenType.OR):
+      operator = self.__peek()
+      self.__advance()
+      right = self.__logic_and()
+      left = Logical(left, operator, right)
+    return left
+
+
+  def __logic_and(self) -> Expr:
+    left = self.__equality()
+    while self.__match(TokenType.AND):
+      operator = self.__peek()
+      self.__advance()
+      right = self.__equality()
+      left = Logical(left, operator, right)
+    return left
 
   def __equality(self) -> Expr:
     expr = self.__comparison()

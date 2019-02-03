@@ -67,6 +67,16 @@ class Interpreter(ExprVisitor, StmtVisitor):
   def visitLiteralExpr(self, expr):
     return expr.value
 
+  def visitLogicalExpr(self, expr):
+    left_value = self.evaluate(expr.left)
+    if expr.operator.type == TokenType.OR:
+      if self.__is_truthy(left_value):
+        return left_value
+    else:
+      if not self.__is_truthy(left_value):
+        return left_value
+    return self.evaluate(expr.right)
+
   def visitGroupingExpr(self, expr):
     return self.evaluate(expr.expression)
   
@@ -97,7 +107,14 @@ class Interpreter(ExprVisitor, StmtVisitor):
       self.environment = previous
       
   def visitExpressionStmt(self, stmt):
-    self.evaluate(stmt.expression)
+    print(self.evaluate(stmt.expression))
+  
+  def visitIfStmt(self, stmt):
+    c = self.evaluate(stmt.condition)
+    if self.__is_truthy(c):
+      self.execute(stmt.then_branch)
+    elif stmt.else_branch:
+      self.execute(stmt.else_branch)
 
   def visitVarStmt(self, stmt):
     value = None

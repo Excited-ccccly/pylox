@@ -58,4 +58,7 @@ class StmtVisitor:
   @abstractmethod
   def visitBlockStmt(self, expr):
     raise NotImplementedError()      
+  @abstractmethod
+  def visitIfStmt(self, expr):
+    raise NotImplementedError()          
   
