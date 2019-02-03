@@ -107,7 +107,7 @@ class Interpreter(ExprVisitor, StmtVisitor):
       self.environment = previous
       
   def visitExpressionStmt(self, stmt):
-    print(self.evaluate(stmt.expression))
+    self.evaluate(stmt.expression)
   
   def visitIfStmt(self, stmt):
     c = self.evaluate(stmt.condition)
@@ -117,8 +117,7 @@ class Interpreter(ExprVisitor, StmtVisitor):
       self.execute(stmt.else_branch)
   
   def visitWhileStmt(self, stmt):
-    c = self.evaluate(stmt.condition)
-    while self.__is_truthy(c):
+    while self.__is_truthy(self.evaluate(stmt.condition)):
       self.execute(stmt.body)
 
   def visitVarStmt(self, stmt):

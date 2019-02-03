@@ -34,18 +34,21 @@ class Parser:
     return Var(name=name, initializer=initializer)
     
   def __stmt(self):
-    if self.__match_then_advance(TokenType.PRINT): return self.__print_stmt()
-    if self.__match_then_advance(TokenType.LEFT_BRACE): return self.__block()
-    if self.__match_then_advance(TokenType.IF): return self.__if_stmt()
-    if self.__match_then_advance(TokenType.WHILE): return self.__while_stmt()
+    if self.__match(TokenType.PRINT): return self.__print_stmt()
+    if self.__match(TokenType.LEFT_BRACE): return self.__block()
+    if self.__match(TokenType.IF): return self.__if_stmt()
+    if self.__match(TokenType.WHILE): return self.__while_stmt()
+    if self.__match(TokenType.FOR): return self.__for_stmt()
     return self.__expr_stmt()
 
   def __print_stmt(self):
+    self.__advance()
     expr = self.__expression()
     self.__consume(expected=TokenType.SEMICOLON, err_msg="Expect ';' after statement.")
     return Print(expr)
   
   def __block(self):
+    self.__advance()
     stmts = []
     while not self.__match(TokenType.RIGHT_BRACE) and not self.__is_at_end():
       stmts.append(self.__declaration())
@@ -53,6 +56,7 @@ class Parser:
     return Block(statements=stmts)
   
   def __if_stmt(self):
+    self.__advance()
     self.__consume(TokenType.LEFT_PAREN, "Expect '(' after 'if'.")
     condition = self.__expression()
     self.__consume(TokenType.RIGHT_PAREN, "Expect ')' after if condition.")
@@ -63,11 +67,41 @@ class Parser:
     return If(condition, then_branch, else_branch)
 
   def __while_stmt(self):
+    self.__advance()
     self.__consume(TokenType.LEFT_PAREN, "Expect '(' after 'if'.")
     condition = self.__expression()
     self.__consume(TokenType.RIGHT_PAREN, "Expect ')' after if condition.")
     body = self.__stmt()
     return While(condition, body)
+
+  def __for_stmt(self):
+    self.__advance()
+    self.__consume(TokenType.LEFT_PAREN, "Expect '(' after 'for'.")
+    initializer = None
+    if self.__match(TokenType.VAR):
+      initializer = self.__declaration()
+    elif not self.__match_then_advance(TokenType.SEMICOLON):
+      self.__expr_stmt()
+      self.__advance()
+    condition = None
+    if not self.__match_then_advance(TokenType.SEMICOLON):
+      condition = self.__expression()
+      self.__advance()
+    increment = None
+    if not self.__match_then_advance(TokenType.RIGHT_PAREN):
+      increment = self.__expression()
+      self.__advance()
+    body = self.__stmt()
+    if increment:
+      body = Block(statements=[body, increment])
+    if not condition:
+      condition = Literal(True)
+    body = While(condition, body)
+    if initializer:
+      body = Block(statements=[initializer, body])
+    return body
+
+    
 
   def __expr_stmt(self):
     expr = self.__expression()
@@ -208,9 +242,6 @@ class Parser:
 
   def __peek(self) -> Token:
     return self.tokens[self.current]
-
-  def __previous(self) -> Token:
-    return self.tokens[self.current - 1]
 
   def __lookahead(self) -> Token:
     return self.tokens[self.current + 1]
