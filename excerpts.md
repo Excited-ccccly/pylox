@@ -1,0 +1,3 @@
+* I find it delightful that the same group of people who pride themselves on dispassionate logic are also the ones who can’t resist emotionally-loaded terms for their work: “pure”, “side effect”, “lazy”, “persistent”, “first-class”, “higher-order”.
+* Like most C-derived languages, assignment is an expression and not a statement.In some other languages, like Pascal, Python, and Go, assignment is a statement.
+* 
