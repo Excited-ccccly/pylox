@@ -3,11 +3,14 @@ from pylox.stmt import StmtVisitor
 from pylox.token import Token, TokenType
 from pylox.error import RuntimeError
 from pylox.environment import Environment
+from pylox.lox_callable import LoxCallable, Clock
 
 class Interpreter(ExprVisitor, StmtVisitor):
 
   def __init__(self):
-    self.environment = Environment()
+    self.globals = Environment()
+    self.environment = globals
+    self.globals.define("clock", Clock())
 
   def interprete(self, stmts):
     try:
@@ -63,6 +66,16 @@ class Interpreter(ExprVisitor, StmtVisitor):
     elif operator_type == TokenType.BANG_EQUAL:
       return left == right
     return None
+
+  def visitCallExpr(self, expr):
+    callee = self.evaluate(expr.callee)
+    arguments = [self.evaluate(arg) for arg in expr.arguments]
+    if not isinstance(callee, LoxCallable):
+      raise RuntimeError(expr.paren, "Can only call functions and classes.")
+    func = LoxCallable(callee)
+    if len(arguments) != func.arity():
+      raise RuntimeError(expr.paren, f"Expected {func.arity()} arguments but got {len(arguments)}.")
+    return func.call(self, arguments)
 
   def visitLiteralExpr(self, expr):
     return expr.value

@@ -1,7 +1,7 @@
 from typing import List
 from pylox.token import Token, TokenType
-from pylox.expr import Expr, Binary, Unary, Literal, Grouping, Variable, Assign, Logical
-from pylox.stmt import Print, Expression, Var, Block, If, While
+from pylox.expr import Expr, Binary, Unary, Literal, Grouping, Variable, Assign, Logical, Call
+from pylox.stmt import Print, Expression, Var, Block, If, While, Function
 from pylox.error import ParseError, error_handler
 
 class Parser:
@@ -20,9 +20,28 @@ class Parser:
   def __declaration(self):
     try:
       if self.__match(TokenType.VAR): return self.__var_declaration()
+      if self.__match(TokenType.FUN): return self.__fun_delcaration()
       return self.__stmt()
     except ParseError:
       self.__synchronize()
+
+  def __fun_delcaration(self):
+    self.__advance()
+    return self.__function()
+
+  def __function(self):
+    name: Token = self.__consume(TokenType.IDENTIFIER, err_msg="Expect function name")
+    self.__consume(TokenType.LEFT_PAREN, "Expect '(' after function name")
+    params = []
+    if not self.__match(TokenType.RIGHT_PAREN):
+      params.append(self.__primary())
+      while self.__match_then_advance(TokenType.COMMA):
+        if len(params) >= 8:
+          error_handler.parse_error(self.__peek(), "Cannot have more than 8 parameters.")
+        params.append(self.__primary())
+    self.__consume(TokenType.RIGHT_PAREN, "Expect ')' after parameters")
+    body = self.__block()
+    return Function(name, params, body)
 
   def __var_declaration(self):
     self.__advance()
@@ -185,6 +204,27 @@ class Parser:
       right = self.__unary()
       return Unary(operator, right)
     return self.__primary()
+
+  def __call(self) -> Expr:
+    expr = self.__primary()
+    while True:
+      if self.__match_then_advance(TokenType.LEFT_PAREN):
+        expr = self.__finish_call(expr)
+      else:
+        break
+    return expr
+
+  def __finish_call(self, callee):
+    arguments = []
+    if not self.__match(TokenType.RIGHT_PAREN):
+      arguments.append(self.__expression())
+      while self.__match_then_advance(TokenType.COMMA):
+        if len(arguments) >= 8:
+          error_handler.parse_error(self.__peek(), "Cannot have more than 8 arguments.")
+        arguments.append(self.__expression())
+    paren = self.__consume(TokenType.RIGHT_BRACE, "Expect ')' after arguments.")
+    return Call(callee, paren, arguments)
+
 
   def __primary(self):
     if self.__match_then_advance(TokenType.TRUE):
