@@ -133,9 +133,9 @@ class Interpreter(ExprVisitor, StmtVisitor):
   def visitIfStmt(self, stmt):
     c = self.evaluate(stmt.condition)
     if self.__is_truthy(c):
-      self.execute(stmt.then_branch)
-    elif stmt.else_branch:
-      self.execute(stmt.else_branch)
+      self.execute(stmt.thenBranch)
+    elif stmt.elseBranch:
+      self.execute(stmt.elseBranch)
   
   def visitWhileStmt(self, stmt):
     while self.__is_truthy(self.evaluate(stmt.condition)):
