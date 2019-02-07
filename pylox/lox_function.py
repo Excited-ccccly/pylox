@@ -4,11 +4,12 @@ from pylox.error import ReturnValue
 
 class LoxFunction(LoxCallable):
 
-  def __init__(self, func_declaration):
+  def __init__(self, func_declaration, closure):
     self.declaration = func_declaration
+    self.closure = closure
 
   def call(self, interpreter, arguments):
-    environment = Environment(interpreter.globals)
+    environment = Environment(self.closure)
     for param, argument in zip(self.declaration.params, arguments):
       environment.define(param.name.lexeme, argument)
     try:
