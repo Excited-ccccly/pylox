@@ -29,3 +29,8 @@ class TestInterpreter(TestCase):
     with open("tests/data/interpreter/for.lox") as f:
       stmts = Parser(Scanner(f.read()).scan_tokens()).parse()
       Interpreter().interprete(stmts)
+
+  def test_interpret_function_stmt(self):
+    with open("tests/data/interpreter/function.lox") as f:
+      stmts = Parser(Scanner(f.read()).scan_tokens()).parse()
+      Interpreter().interprete(stmts)

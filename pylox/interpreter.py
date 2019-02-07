@@ -4,12 +4,13 @@ from pylox.token import Token, TokenType
 from pylox.error import RuntimeError
 from pylox.environment import Environment
 from pylox.lox_callable import LoxCallable, Clock
+from pylox.lox_function import LoxFunction
 
 class Interpreter(ExprVisitor, StmtVisitor):
 
   def __init__(self):
     self.globals = Environment()
-    self.environment = globals
+    self.environment = self.globals
     self.globals.define("clock", Clock())
 
   def interprete(self, stmts):
@@ -72,7 +73,7 @@ class Interpreter(ExprVisitor, StmtVisitor):
     arguments = [self.evaluate(arg) for arg in expr.arguments]
     if not isinstance(callee, LoxCallable):
       raise RuntimeError(expr.paren, "Can only call functions and classes.")
-    func = LoxCallable(callee)
+    func = callee
     if len(arguments) != func.arity():
       raise RuntimeError(expr.paren, f"Expected {func.arity()} arguments but got {len(arguments)}.")
     return func.call(self, arguments)
@@ -109,15 +110,22 @@ class Interpreter(ExprVisitor, StmtVisitor):
     value = self.evaluate(stmt.expression)
     print(value)
 
-  def visitBlockStmt(self, stmt):
-    block_environment = Environment(enclosing=self.environment)
+  def execute_block(self, stmts, environment):
     previous = self.environment
     try:
-      self.environment = block_environment
-      for s in stmt.statements:
+      self.environment = environment
+      for s in stmts:
         self.execute(s)
     finally:
       self.environment = previous
+      
+  def visitBlockStmt(self, stmt):
+    block_environment = Environment(enclosing=self.environment)
+    self.execute_block(stmt.statements, block_environment)
+
+  def visitFunctionStmt(self, stmt):
+    func = LoxFunction(stmt)
+    self.environment.define(stmt.name.lexeme, func)
       
   def visitExpressionStmt(self, stmt):
     self.evaluate(stmt.expression)

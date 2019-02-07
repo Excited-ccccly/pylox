@@ -203,7 +203,7 @@ class Parser:
       self.__advance()
       right = self.__unary()
       return Unary(operator, right)
-    return self.__primary()
+    return self.__call()
 
   def __call(self) -> Expr:
     expr = self.__primary()
@@ -222,7 +222,7 @@ class Parser:
         if len(arguments) >= 8:
           error_handler.parse_error(self.__peek(), "Cannot have more than 8 arguments.")
         arguments.append(self.__expression())
-    paren = self.__consume(TokenType.RIGHT_BRACE, "Expect ')' after arguments.")
+    paren = self.__consume(TokenType.RIGHT_PAREN, "Expect ')' after arguments.")
     return Call(callee, paren, arguments)
 
 
@@ -271,6 +271,7 @@ class Parser:
       self.__advance()
       return token
     else:
+      error_handler.parse_error(self.__peek(), err_msg)
       raise ParseError(err_msg)    
   
   def __check(self, token_type: TokenType) -> bool:
