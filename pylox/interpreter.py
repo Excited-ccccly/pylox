@@ -1,7 +1,7 @@
 from pylox.expr import ExprVisitor
 from pylox.stmt import StmtVisitor
 from pylox.token import Token, TokenType
-from pylox.error import RuntimeError
+from pylox.error import RuntimeError, ReturnValue
 from pylox.environment import Environment
 from pylox.lox_callable import LoxCallable, Clock
 from pylox.lox_function import LoxFunction
@@ -123,20 +123,26 @@ class Interpreter(ExprVisitor, StmtVisitor):
     block_environment = Environment(enclosing=self.environment)
     self.execute_block(stmt.statements, block_environment)
 
+  def visitExpressionStmt(self, stmt):
+    self.evaluate(stmt.expression)
+
   def visitFunctionStmt(self, stmt):
     func = LoxFunction(stmt)
     self.environment.define(stmt.name.lexeme, func)
       
-  def visitExpressionStmt(self, stmt):
-    self.evaluate(stmt.expression)
-  
   def visitIfStmt(self, stmt):
     c = self.evaluate(stmt.condition)
     if self.__is_truthy(c):
       self.execute(stmt.thenBranch)
     elif stmt.elseBranch:
       self.execute(stmt.elseBranch)
-  
+
+  def visitReturnStmt(self, stmt):
+    value = None
+    if stmt.value:
+      value = self.evaluate(stmt.value)
+    raise ReturnValue(value)
+    
   def visitWhileStmt(self, stmt):
     while self.__is_truthy(self.evaluate(stmt.condition)):
       self.execute(stmt.body)

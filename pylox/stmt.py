@@ -67,4 +67,7 @@ class StmtVisitor:
   @abstractmethod
   def visitFunctionStmt(self, expr):
     raise NotImplementedError()                  
+  @abstractmethod
+  def visitReturnStmt(self, expr):
+    raise NotImplementedError()                      
   

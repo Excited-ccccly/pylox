@@ -1,7 +1,7 @@
 from typing import List
 from pylox.token import Token, TokenType
 from pylox.expr import Expr, Binary, Unary, Literal, Grouping, Variable, Assign, Logical, Call
-from pylox.stmt import Print, Expression, Var, Block, If, While, Function
+from pylox.stmt import Print, Expression, Var, Block, If, While, Function, Return
 from pylox.error import ParseError, error_handler
 
 class Parser:
@@ -53,18 +53,13 @@ class Parser:
     return Var(name=name, initializer=initializer)
     
   def __stmt(self):
-    if self.__match(TokenType.PRINT): return self.__print_stmt()
     if self.__match(TokenType.LEFT_BRACE): return self.__block()
-    if self.__match(TokenType.IF): return self.__if_stmt()
-    if self.__match(TokenType.WHILE): return self.__while_stmt()
     if self.__match(TokenType.FOR): return self.__for_stmt()
+    if self.__match(TokenType.IF): return self.__if_stmt()
+    if self.__match(TokenType.PRINT): return self.__print_stmt()
+    if self.__match(TokenType.RETURN): return self.__return_stmt()
+    if self.__match(TokenType.WHILE): return self.__while_stmt()
     return self.__expr_stmt()
-
-  def __print_stmt(self):
-    self.__advance()
-    expr = self.__expression()
-    self.__consume(expected=TokenType.SEMICOLON, err_msg="Expect ';' after statement.")
-    return Print(expr)
   
   def __block(self):
     self.__advance()
@@ -73,25 +68,11 @@ class Parser:
       stmts.append(self.__declaration())
     self.__consume(TokenType.RIGHT_BRACE, "Expect '}' after block.")
     return Block(statements=stmts)
-  
-  def __if_stmt(self):
-    self.__advance()
-    self.__consume(TokenType.LEFT_PAREN, "Expect '(' after 'if'.")
-    condition = self.__expression()
-    self.__consume(TokenType.RIGHT_PAREN, "Expect ')' after if condition.")
-    then_branch = self.__stmt()
-    else_branch = None
-    if self.__match_then_advance(TokenType.ELSE):
-      else_branch = self.__stmt()
-    return If(condition, then_branch, else_branch)
 
-  def __while_stmt(self):
-    self.__advance()
-    self.__consume(TokenType.LEFT_PAREN, "Expect '(' after 'if'.")
-    condition = self.__expression()
-    self.__consume(TokenType.RIGHT_PAREN, "Expect ')' after if condition.")
-    body = self.__stmt()
-    return While(condition, body)
+  def __expr_stmt(self):
+    expr = self.__expression()
+    self.__consume(expected=TokenType.SEMICOLON, err_msg="Expect ';' after statement.")
+    return Expression(expr)
 
   def __for_stmt(self):
     self.__advance()
@@ -118,14 +99,43 @@ class Parser:
     body = While(condition, body)
     if initializer:
       body = Block(statements=[initializer, body])
-    return body
+    return body    
+  
+  def __if_stmt(self):
+    self.__advance()
+    self.__consume(TokenType.LEFT_PAREN, "Expect '(' after 'if'.")
+    condition = self.__expression()
+    self.__consume(TokenType.RIGHT_PAREN, "Expect ')' after if condition.")
+    then_branch = self.__stmt()
+    else_branch = None
+    if self.__match_then_advance(TokenType.ELSE):
+      else_branch = self.__stmt()
+    return If(condition, then_branch, else_branch)
 
-    
-
-  def __expr_stmt(self):
+  def __print_stmt(self):
+    self.__advance()
     expr = self.__expression()
     self.__consume(expected=TokenType.SEMICOLON, err_msg="Expect ';' after statement.")
-    return Expression(expr)
+    return Print(expr)    
+
+  def __return_stmt(self):
+    keyword = self.__peek()
+    self.__advance()
+    return_value = None
+    if self.__match_then_advance(TokenType.SEMICOLON):
+      return return_value
+    else:
+      return_value = self.__expression()
+      self.__consume(TokenType.SEMICOLON, "Expect ';' after return value.")
+    return Return(keyword, return_value)
+
+  def __while_stmt(self):
+    self.__advance()
+    self.__consume(TokenType.LEFT_PAREN, "Expect '(' after 'if'.")
+    condition = self.__expression()
+    self.__consume(TokenType.RIGHT_PAREN, "Expect ')' after if condition.")
+    body = self.__stmt()
+    return While(condition, body)
       
   def __expression(self) -> Expr:
     return self.__assignment()

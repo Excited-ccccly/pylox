@@ -20,3 +20,7 @@ class ParseError(Exception):
 
 class RuntimeError(Exception):
   pass
+
+class ReturnValue(Exception):
+  def __init__(self, value):
+    self.value = value  

@@ -1,5 +1,6 @@
 from pylox.lox_callable import LoxCallable
 from pylox.environment import Environment
+from pylox.error import ReturnValue
 
 class LoxFunction(LoxCallable):
 
@@ -10,7 +11,10 @@ class LoxFunction(LoxCallable):
     environment = Environment(interpreter.globals)
     for param, argument in zip(self.declaration.params, arguments):
       environment.define(param.name.lexeme, argument)
-    interpreter.execute_block(self.declaration.body.statements, environment)
+    try:
+      interpreter.execute_block(self.declaration.body.statements, environment)
+    except ReturnValue as r:
+      return r.value
 
   def arity(self):
     return len(self.declaration.params)
