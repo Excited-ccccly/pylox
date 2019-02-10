@@ -12,6 +12,7 @@ class Interpreter(ExprVisitor, StmtVisitor):
     self.globals = Environment()
     self.environment = self.globals
     self.globals.define("clock", Clock())
+    self.locals = {}
 
   def interprete(self, stmts):
     try:
@@ -23,12 +24,19 @@ class Interpreter(ExprVisitor, StmtVisitor):
   def execute(self, stmt):
     stmt.accept(self)
 
+  def resolve(self, expr, depth:int):
+    self.locals[expr] = depth
+    
   def evaluate(self, expr):
     return expr.accept(self)
 
   def visitAssignExpr(self, expr):
     value = self.evaluate(expr.value)
-    self.environment.assign(expr.name.lexeme, value)
+    distance = self.locals.get(expr)
+    if distance:
+      self.environment.assign_at(distance, expr.name.lexeme, value)
+    else:
+      self.globals.assign(expr.name.lexeme, value)
     return value
 
   def visitBinaryExpr(self, expr):
@@ -104,7 +112,14 @@ class Interpreter(ExprVisitor, StmtVisitor):
     return None
   
   def visitVariableExpr(self, expr):
-    return self.environment.get(expr.name)
+    return self.__lookup_variable(expr.name, expr)
+
+  def __lookup_variable(self, token, expr):
+    distance = self.locals.get(expr)
+    if distance is not None:
+      return self.environment.get_at(distance, token.lexeme)
+    else:
+      return self.globals.get(token)
 
   def visitPrintStmt(self, stmt):
     value = self.evaluate(stmt.expression)

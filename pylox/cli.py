@@ -4,9 +4,11 @@
 import sys
 import click
 
+from pylox.error import error_handler
 from pylox.scanner import Scanner
 from pylox.parser import Parser
 from pylox.interpreter import Interpreter
+from pylox.resolver import Resolver
 
 @click.command()
 @click.argument('file', type=click.Path(exists=True), required=False)
@@ -33,6 +35,9 @@ interpreter = Interpreter()
 def run(source: str):
   tokens = Scanner(source).scan_tokens()
   stmts = Parser(tokens).parse()
+  if error_handler.had_error: return
+  Resolver(interpreter).__resolve(stmts)
+  if error_handler.had_error: return
   interpreter.interprete(stmts)
 
 
