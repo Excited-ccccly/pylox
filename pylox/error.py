@@ -13,6 +13,9 @@ class ErrorHandler(object):
     else:
       self.error(token.line, f" at '{token.lexeme}'", message)
 
+  def resolve_error(self, token: Token, message: str):
+    self.parse_error(token, message)
+
 error_handler = ErrorHandler()
 
 class ParseError(Exception):
