@@ -33,6 +33,10 @@ class Resolver(ExprVisitor, StmtVisitor):
     self.__resolve(expr.value)
     self.__resolve_local(expr, expr.name)
 
+  def visitClassStmt(self, stmt):
+    self.__declare(stmt.name)
+    self.__define(stmt.name)
+    
   def visitFunctionStmt(self, stmt):
     self.__declare(stmt.name)
     self.__define(stmt.name)
@@ -68,6 +72,9 @@ class Resolver(ExprVisitor, StmtVisitor):
     self.__resolve(expr.callee)
     for argument in expr.arguments:
       self.__resolve(argument)
+  
+  def visitGetExpr(self, expr):
+    self.__resolve(expr.object)
 
   def visitGroupingExpr(self, expr):
     self.__resolve(expr.expression)
@@ -78,6 +85,10 @@ class Resolver(ExprVisitor, StmtVisitor):
   def visitLogicalExpr(self, expr):
     self.__resolve(expr.left)
     self.__resolve(expr.right)
+
+  def visitSetExpr(self, expr):
+    self.__resolve(expr.value)
+    self.__resolve(expr.object)
 
   def visitUnaryExpr(self, expr):
     self.__resolve(expr.right)

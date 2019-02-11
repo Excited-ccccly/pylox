@@ -5,6 +5,7 @@ from pylox.error import RuntimeError, ReturnValue
 from pylox.environment import Environment
 from pylox.lox_callable import LoxCallable, Clock
 from pylox.lox_function import LoxFunction
+from pylox.lox_class import LoxClass, LoxInstance
 
 class Interpreter(ExprVisitor, StmtVisitor):
 
@@ -86,6 +87,12 @@ class Interpreter(ExprVisitor, StmtVisitor):
       raise RuntimeError(expr.paren, f"Expected {func.arity()} arguments but got {len(arguments)}.")
     return func.call(self, arguments)
 
+  def visitGetExpr(self, expr):
+    obj = self.evaluate(expr.object)
+    if isinstance(obj, LoxInstance):
+      return obj.get(expr.name)
+    raise RuntimeError(expr.name, "Only instances have properties.")
+
   def visitLiteralExpr(self, expr):
     return expr.value
 
@@ -101,6 +108,14 @@ class Interpreter(ExprVisitor, StmtVisitor):
 
   def visitGroupingExpr(self, expr):
     return self.evaluate(expr.expression)
+
+  def visitSetExpr(self, expr):
+    obj = self.evaluate(expr.object)
+    if isinstance(obj, LoxInstance):
+      value = self.evaluate(expr.value)
+      obj.set(expr.name.lexeme, value)
+      return value
+    raise RuntimeError(expr.name, "Only instances have fields.")
   
   def visitUnaryExpr(self, expr):
     right = self.evaluate(expr.right)
@@ -137,6 +152,12 @@ class Interpreter(ExprVisitor, StmtVisitor):
   def visitBlockStmt(self, stmt):
     block_environment = Environment(enclosing=self.environment)
     self.execute_block(stmt.statements, block_environment)
+
+  def visitClassStmt(self, stmt):
+    lexeme = stmt.name.lexeme
+    self.environment.define(lexeme, None)
+    klass = LoxClass(lexeme)
+    self.environment.assign(lexeme, klass)
 
   def visitExpressionStmt(self, stmt):
     self.evaluate(stmt.expression)

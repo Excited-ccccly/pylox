@@ -1,7 +1,7 @@
 from typing import List
 from pylox.token import Token, TokenType
-from pylox.expr import Expr, Binary, Unary, Literal, Grouping, Variable, Assign, Logical, Call
-from pylox.stmt import Print, Expression, Var, Block, If, While, Function, Return
+from pylox.expr import Expr, Binary, Unary, Literal, Grouping, Variable, Assign, Logical, Call, Get, Set
+from pylox.stmt import Print, Expression, Var, Block, If, While, Function, Return, Class
 from pylox.error import ParseError, error_handler
 
 class Parser:
@@ -20,18 +20,28 @@ class Parser:
   def __declaration(self):
     try:
       if self.__match(TokenType.VAR): return self.__var_declaration()
-      if self.__match(TokenType.FUN): return self.__fun_delcaration()
+      if self.__match(TokenType.FUN): return self.__fun_declaration()
+      if self.__match(TokenType.CLASS): return self.__class_declaration()
       return self.__stmt()
     except ParseError:
       self.__synchronize()
 
-  def __fun_delcaration(self):
+  def __class_declaration(self):
     self.__advance()
-    return self.__function()
+    name: Token = self.__consume(TokenType.IDENTIFIER, "Expect class name.")
+    self.__consume(TokenType.LEFT_BRACE, "Expect '{' before class body.")
+    methods = []
+    while not self.__match_then_advance(TokenType.RIGHT_BRACE) and not self.__is_at_end():
+      methods.append(self.__function("method"))
+    return Class(name, superclass=None, methods=methods)
 
-  def __function(self):
-    name: Token = self.__consume(TokenType.IDENTIFIER, err_msg="Expect function name")
-    self.__consume(TokenType.LEFT_PAREN, "Expect '(' after function name")
+  def __fun_declaration(self):
+    self.__advance()
+    return self.__function("function")
+
+  def __function(self, kind: str):
+    name: Token = self.__consume(TokenType.IDENTIFIER, err_msg=f"Expect {kind} name")
+    self.__consume(TokenType.LEFT_PAREN, f"Expect '(' after {kind} name")
     params = []
     if not self.__match(TokenType.RIGHT_PAREN):
       params.append(self.__primary())
@@ -149,6 +159,8 @@ class Parser:
       if isinstance(expr, Variable):
         name: Token = expr.name
         return Assign(name, value)
+      elif isinstance(expr, Get):
+        return Set(object=expr.object, name=expr.name, value=value)
       error_handler.parse_error(equals, "Invalid assignment target.")
     return expr
 
@@ -220,6 +232,9 @@ class Parser:
     while True:
       if self.__match_then_advance(TokenType.LEFT_PAREN):
         expr = self.__finish_call(expr)
+      elif self.__match_then_advance(TokenType.DOT):
+        name = self.__consume(TokenType.IDENTIFIER, "Expect property name after '.'.")
+        expr = Get(expr, name)
       else:
         break
     return expr
