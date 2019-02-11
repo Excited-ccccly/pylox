@@ -23,8 +23,16 @@ def main(file=None):
 def run_repr():
 
   while True:
-      print("> ", end="")
-      run(input())
+    print("> ", end="")
+    lines = []
+    while True:
+        line = input()
+        if line:
+            lines.append(line)
+        else:
+            break
+    code = '\n'.join(lines)    
+    run(code)
 
 
 def run_file(file):
@@ -36,7 +44,7 @@ def run(source: str):
   tokens = Scanner(source).scan_tokens()
   stmts = Parser(tokens).parse()
   if error_handler.had_error: return
-  Resolver(interpreter).__resolve(stmts)
+  Resolver(interpreter).resolve(stmts)
   if error_handler.had_error: return
   interpreter.interprete(stmts)
 
