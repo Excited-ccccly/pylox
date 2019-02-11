@@ -36,6 +36,8 @@ class Resolver(ExprVisitor, StmtVisitor):
   def visitClassStmt(self, stmt):
     self.__declare(stmt.name)
     self.__define(stmt.name)
+    for method in stmt.methods:
+      self.__resolve_function(method, FunctionType.METHOD)
     
   def visitFunctionStmt(self, stmt):
     self.__declare(stmt.name)
@@ -138,3 +140,4 @@ class Resolver(ExprVisitor, StmtVisitor):
 class FunctionType(IntEnum):
   NONE = 0
   FUNCTION = 1
+  METHOD = 2

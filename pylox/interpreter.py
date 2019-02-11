@@ -156,7 +156,11 @@ class Interpreter(ExprVisitor, StmtVisitor):
   def visitClassStmt(self, stmt):
     lexeme = stmt.name.lexeme
     self.environment.define(lexeme, None)
-    klass = LoxClass(lexeme)
+    methods = {}
+    for method in stmt.methods:
+      function = LoxFunction(method, self.environment)
+      methods[method.name.lexeme] = function
+    klass = LoxClass(lexeme, methods)
     self.environment.assign(lexeme, klass)
 
   def visitExpressionStmt(self, stmt):
