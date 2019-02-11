@@ -102,7 +102,7 @@ class Resolver(ExprVisitor, StmtVisitor):
     for param in func_stmt.params:
       self.__declare(param)
       self.__define(param)
-    self.__resolve(func_stmt.body)
+    self.resolve(func_stmt.body.statements)
     self.__end_scope()
     self.current_function = enclosing_function
 
