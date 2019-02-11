@@ -17,6 +17,11 @@ class LoxFunction(LoxCallable):
     except ReturnValue as r:
       return r.value
 
+  def bind(self, instance):
+    environment = Environment(self.closure)
+    environment.define("this", instance)
+    return LoxFunction(self.declaration, environment)
+
   def arity(self):
     return len(self.declaration.params)
 

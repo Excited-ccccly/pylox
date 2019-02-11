@@ -16,7 +16,7 @@ class LoxClass(LoxCallable):
 
   def find_method(self, instance, name):
     if self.methods.__contains__(name):
-      return self.methods[name]
+      return self.methods[name].bind(instance)
 
   def __repr__(self):
     return self.name

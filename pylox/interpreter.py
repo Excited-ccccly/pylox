@@ -116,6 +116,9 @@ class Interpreter(ExprVisitor, StmtVisitor):
       obj.set(expr.name.lexeme, value)
       return value
     raise RuntimeError(expr.name, "Only instances have fields.")
+
+  def visitThisExpr(self, expr):
+    return self.__lookup_variable(expr.keyword, expr)
   
   def visitUnaryExpr(self, expr):
     right = self.evaluate(expr.right)

@@ -4,6 +4,7 @@ from pylox.scanner import Scanner
 from pylox.parser import Parser
 from pylox.ast_printer import AstPrinter
 from pylox.interpreter import Interpreter
+from pylox.resolver import Resolver
 
 class TestInterpreter(TestCase):
       
@@ -43,9 +44,13 @@ class TestInterpreter(TestCase):
   def test_interpret_closure(self):
     with open("tests/data/interpreter/closure.lox") as f:
       stmts = Parser(Scanner(f.read()).scan_tokens()).parse()
-      Interpreter().interprete(stmts)
+      interpreter = Interpreter()
+      Resolver(interpreter).resolve(stmts)
+      interpreter.interprete(stmts)
 
   def test_interpret_class(self):
     with open("tests/data/interpreter/class.lox") as f:
       stmts = Parser(Scanner(f.read()).scan_tokens()).parse()
-      Interpreter().interprete(stmts)
+      interpreter = Interpreter()
+      Resolver(interpreter).resolve(stmts)
+      interpreter.interprete(stmts)

@@ -1,6 +1,6 @@
 from typing import List
 from pylox.token import Token, TokenType
-from pylox.expr import Expr, Binary, Unary, Literal, Grouping, Variable, Assign, Logical, Call, Get, Set
+from pylox.expr import Expr, Binary, Unary, Literal, Grouping, Variable, Assign, Logical, Call, Get, Set, This
 from pylox.stmt import Print, Expression, Var, Block, If, While, Function, Return, Class
 from pylox.error import ParseError, error_handler
 
@@ -258,6 +258,10 @@ class Parser:
       return Literal(False)
     if self.__match_then_advance(TokenType.NIL):
       return Literal(None)
+    if self.__match(TokenType.THIS):
+      token = self.__peek()
+      self.__advance()
+      return This(keyword=token)
     if self.__match(TokenType.STRING, TokenType.NUMBER):
       value = self.__peek().literal
       self.__advance()
