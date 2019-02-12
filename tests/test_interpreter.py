@@ -54,3 +54,10 @@ class TestInterpreter(TestCase):
       interpreter = Interpreter()
       Resolver(interpreter).resolve(stmts)
       interpreter.interprete(stmts)
+
+  def test_interpret_class_super(self):
+    with open("tests/data/interpreter/super.lox") as f:
+      stmts = Parser(Scanner(f.read()).scan_tokens()).parse()
+      interpreter = Interpreter()
+      Resolver(interpreter).resolve(stmts)
+      interpreter.interprete(stmts)

@@ -1,6 +1,6 @@
 from typing import List
 from pylox.token import Token, TokenType
-from pylox.expr import Expr, Binary, Unary, Literal, Grouping, Variable, Assign, Logical, Call, Get, Set, This
+from pylox.expr import Expr, Binary, Unary, Literal, Grouping, Variable, Assign, Logical, Call, Get, Set, This, Super
 from pylox.stmt import Print, Expression, Var, Block, If, While, Function, Return, Class
 from pylox.error import ParseError, error_handler
 
@@ -262,6 +262,12 @@ class Parser:
       return Literal(False)
     if self.__match_then_advance(TokenType.NIL):
       return Literal(None)
+    if self.__match(TokenType.SUPER):
+      token = self.__peek()
+      self.__advance()
+      self.__consume(TokenType.DOT, "Expect '.' after 'super'.")
+      method = self.__consume(TokenType.IDENTIFIER, "Expect superclass method name.")
+      return Super(keyword=token, method=method)
     if self.__match(TokenType.THIS):
       token = self.__peek()
       self.__advance()

@@ -21,7 +21,7 @@ class LoxClass(LoxCallable):
       initializer.bind(instance).call(interpreter, arguments)
     return instance
 
-  def find_method(self, instance, name):
+  def find_method(self, instance, name: str):
     if self.methods.__contains__(name):
       return self.methods[name].bind(instance)
     if self.superclass:

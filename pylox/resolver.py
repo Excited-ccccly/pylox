@@ -39,8 +39,12 @@ class Resolver(ExprVisitor, StmtVisitor):
     self.current_class = ClassType.CLASS
     self.__declare(stmt.name)
     if stmt.superclass:
+      self.current_class = ClassType.SUBCLASS
       self.__resolve(stmt.superclass)
     self.__define(stmt.name)
+    if stmt.superclass:
+      self.__begin_scope()
+      self.scopes[-1]["super"] = True
     self.__begin_scope()
     self.scopes[-1]["this"] = True
     for method in stmt.methods:
@@ -49,6 +53,8 @@ class Resolver(ExprVisitor, StmtVisitor):
         func_type = FunctionType.INITIALIZER
       self.__resolve_function(method, func_type)
     self.__end_scope()
+    if stmt.superclass:
+      self.__end_scope()    
     self.current_class = enclosing_class
     
   def visitFunctionStmt(self, stmt):
@@ -105,6 +111,13 @@ class Resolver(ExprVisitor, StmtVisitor):
   def visitSetExpr(self, expr):
     self.__resolve(expr.value)
     self.__resolve(expr.object)
+
+  def visitSuperExpr(self, expr):
+    if self.current_class = ClassType.NONE:
+      error_handler.resolve_error(expr.keyword, "Cannot use 'super' outside of a class.")
+    elif self.current_class != ClassType.SUBCLASS:
+      error_handler.resolve_error(expr.keyword, "Cannot use 'super' in a class with no superclass.")
+    self.__resolve_local(expr, expr.keyword)
   
   def visitThisExpr(self, expr):
     if self.current_class == ClassType.NONE:
@@ -166,3 +179,4 @@ class FunctionType(IntEnum):
 class ClassType(IntEnum):
   NONE = 0
   CLASS = 1
+  SUBCLASS = 2

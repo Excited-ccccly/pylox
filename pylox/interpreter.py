@@ -117,6 +117,15 @@ class Interpreter(ExprVisitor, StmtVisitor):
       return value
     raise RuntimeError(expr.name, "Only instances have fields.")
 
+  def visitSuperExpr(self, expr):
+    distance = self.locals.get(expr)
+    superclass: LoxClass = self.environment.get_at(distance, "super")
+    instance: LoxInstance = self.environment.get_at(distance - 1, "this")
+    method = superclass.find_method(instance, expr.method.lexeme)
+    if not method:
+      raise RuntimeError(expr.method, f"Undefined property '{expr.method.lexeme}'.")
+    return method
+
   def visitThisExpr(self, expr):
     return self.__lookup_variable(expr.keyword, expr)
   
@@ -164,11 +173,16 @@ class Interpreter(ExprVisitor, StmtVisitor):
         raise RuntimeError(stmt.superclass.name, "Superclass must be a class.")
     lexeme = stmt.name.lexeme
     self.environment.define(lexeme, None)
+    if stmt.superclass:
+      self.environment = Environment(self.environment)
+      self.environment.define("super", superclass)
     methods = {}
     for method in stmt.methods:
       function = LoxFunction(method, self.environment, method.name.lexeme == "init")
       methods[method.name.lexeme] = function
     klass = LoxClass(lexeme, superclass, methods)
+    if stmt.superclass:
+      self.environment = self.environment.enclosing
     self.environment.assign(lexeme, klass)
 
   def visitExpressionStmt(self, stmt):
