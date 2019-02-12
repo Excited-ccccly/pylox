@@ -157,13 +157,18 @@ class Interpreter(ExprVisitor, StmtVisitor):
     self.execute_block(stmt.statements, block_environment)
 
   def visitClassStmt(self, stmt):
+    superclass = None
+    if stmt.superclass:
+      superclass = self.evaluate(stmt.superclass)
+      if not isinstance(superclass, LoxClass):
+        raise RuntimeError(stmt.superclass.name, "Superclass must be a class.")
     lexeme = stmt.name.lexeme
     self.environment.define(lexeme, None)
     methods = {}
     for method in stmt.methods:
       function = LoxFunction(method, self.environment, method.name.lexeme == "init")
       methods[method.name.lexeme] = function
-    klass = LoxClass(lexeme, methods)
+    klass = LoxClass(lexeme, superclass, methods)
     self.environment.assign(lexeme, klass)
 
   def visitExpressionStmt(self, stmt):

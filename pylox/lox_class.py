@@ -3,9 +3,10 @@ from pylox.token import Token
 
 class LoxClass(LoxCallable):
 
-  def __init__(self, name:str, methods):
+  def __init__(self, name:str, superclass, methods):
     self.name = name
     self.methods = methods
+    self.superclass = superclass
 
   def arity(self):
     initializer = self.methods.get("init")
@@ -23,6 +24,8 @@ class LoxClass(LoxCallable):
   def find_method(self, instance, name):
     if self.methods.__contains__(name):
       return self.methods[name].bind(instance)
+    if self.superclass:
+      return self.superclass.find_method(instance, name)
 
   def __repr__(self):
     return self.name

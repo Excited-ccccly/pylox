@@ -29,11 +29,15 @@ class Parser:
   def __class_declaration(self):
     self.__advance()
     name: Token = self.__consume(TokenType.IDENTIFIER, "Expect class name.")
+    superclass = None
+    if self.__match_then_advance(TokenType.LESS):
+      superclass_token = self.__consume(TokenType.IDENTIFIER, "Expect superclass name.")
+      superclass = Variable(name=superclass_token)
     self.__consume(TokenType.LEFT_BRACE, "Expect '{' before class body.")
     methods = []
     while not self.__match_then_advance(TokenType.RIGHT_BRACE) and not self.__is_at_end():
       methods.append(self.__function("method"))
-    return Class(name, superclass=None, methods=methods)
+    return Class(name, superclass=superclass, methods=methods)
 
   def __fun_declaration(self):
     self.__advance()

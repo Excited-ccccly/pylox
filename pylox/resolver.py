@@ -38,6 +38,8 @@ class Resolver(ExprVisitor, StmtVisitor):
     enclosing_class = self.current_class
     self.current_class = ClassType.CLASS
     self.__declare(stmt.name)
+    if stmt.superclass:
+      self.__resolve(stmt.superclass)
     self.__define(stmt.name)
     self.__begin_scope()
     self.scopes[-1]["this"] = True
