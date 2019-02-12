@@ -12,6 +12,7 @@ class Resolver(ExprVisitor, StmtVisitor):
     self.interpreter = interpreter
     self.scopes: List[dict] = []
     self.current_function = FunctionType.NONE
+    self.current_class = ClassType.NONE
 
   def visitBlockStmt(self, stmt):
     self.__begin_scope()
@@ -34,6 +35,8 @@ class Resolver(ExprVisitor, StmtVisitor):
     self.__resolve_local(expr, expr.name)
 
   def visitClassStmt(self, stmt):
+    enclosing_class = self.current_class
+    self.current_class = ClassType.CLASS
     self.__declare(stmt.name)
     self.__define(stmt.name)
     self.__begin_scope()
@@ -41,6 +44,7 @@ class Resolver(ExprVisitor, StmtVisitor):
     for method in stmt.methods:
       self.__resolve_function(method, FunctionType.METHOD)
     self.__end_scope()
+    self.current_class = enclosing_class
     
   def visitFunctionStmt(self, stmt):
     self.__declare(stmt.name)
@@ -96,6 +100,9 @@ class Resolver(ExprVisitor, StmtVisitor):
     self.__resolve(expr.object)
   
   def visitThisExpr(self, expr):
+    if self.current_class == ClassType.NONE:
+      error_handler.resolve_error(expr.keyword, "Cannot use 'this' outside of a class.")
+      return
     self.__resolve_local(expr, expr.keyword)
 
   def visitUnaryExpr(self, expr):
@@ -147,3 +154,7 @@ class FunctionType(IntEnum):
   NONE = 0
   FUNCTION = 1
   METHOD = 2
+
+class ClassType(IntEnum):
+  NONE = 0
+  CLASS = 1
