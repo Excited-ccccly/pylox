@@ -42,7 +42,10 @@ class Resolver(ExprVisitor, StmtVisitor):
     self.__begin_scope()
     self.scopes[-1]["this"] = True
     for method in stmt.methods:
-      self.__resolve_function(method, FunctionType.METHOD)
+      func_type = FunctionType.METHOD
+      if method.name.lexeme == "init":
+        func_type = FunctionType.INITIALIZER
+      self.__resolve_function(method, func_type)
     self.__end_scope()
     self.current_class = enclosing_class
     
@@ -67,6 +70,8 @@ class Resolver(ExprVisitor, StmtVisitor):
     if self.current_function == FunctionType.NONE:
       error_handler.resolve_error(stmt.keyword, "Cannot return from top-level code.")
     if stmt.value:
+      if self.current_function == FunctionType.INITIALIZER:
+        error_handler.resolve_error(stmt.keyword, "Cannot return a value from an initializer.")
       self.__resolve(stmt.value)
 
   def visitWhileStmt(self, stmt):
@@ -154,6 +159,7 @@ class FunctionType(IntEnum):
   NONE = 0
   FUNCTION = 1
   METHOD = 2
+  INITIALIZER = 3
 
 class ClassType(IntEnum):
   NONE = 0

@@ -19,6 +19,8 @@ class LoxFunction(LoxCallable):
       if self.is_initializer:
         return self.closure.get_at(0, "this")
       return r.value
+    if self.is_initializer:
+      return self.closure.get_at(0, "this")      
 
   def bind(self, instance):
     environment = Environment(self.closure)
