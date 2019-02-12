@@ -8,10 +8,16 @@ class LoxClass(LoxCallable):
     self.methods = methods
 
   def arity(self):
-    return 0    
+    initializer = self.methods.get("init")
+    if initializer:
+      return initializer.arity()    
+    return 0
 
   def call(self, interpreter, arguments):
     instance = LoxInstance(self)
+    initializer = self.methods.get("init")
+    if initializer:
+      initializer.bind(instance).call(interpreter, arguments)
     return instance
 
   def find_method(self, instance, name):
