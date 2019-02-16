@@ -2,6 +2,25 @@
 pylox
 =====
 
+.. image:: https://travis-ci.org/Excited-ccccly/pylox.svg?branch=master
+        :target: https://travis-ci.org/Excited-ccccly/pylox
+.. image:: https://sonarcloud.io/api/project_badges/measure?project=Excited-ccccly_pylox&metric=sqale_rating
+        :target: https://sonarcloud.io/dashboard?id=Excited-ccccly_pylox
+.. image:: https://sonarcloud.io/api/project_badges/measure?project=Excited-ccccly_pylox&metric=coverage
+        :target: https://sonarcloud.io/dashboard?id=Excited-ccccly_pylox
+.. image:: https://sonarcloud.io/api/project_badges/measure?project=Excited-ccccly_pylox&metric=reliability_rating
+        :target: https://sonarcloud.io/dashboard?id=Excited-ccccly_pylox
+.. image:: https://sonarcloud.io/api/project_badges/measure?project=Excited-ccccly_pylox&metric=bugs
+        :target: https://sonarcloud.io/dashboard?id=Excited-ccccly_pylox
+.. image:: https://sonarcloud.io/api/project_badges/measure?project=Excited-ccccly_pylox&metric=code_smells
+        :target: https://sonarcloud.io/dashboard?id=Excited-ccccly_pylox
+.. image:: https://sonarcloud.io/api/project_badges/measure?project=Excited-ccccly_pylox&metric=sqale_index
+        :target: https://sonarcloud.io/dashboard?id=Excited-ccccly_pylox
+.. image:: https://sonarcloud.io/api/project_badges/measure?project=Excited-ccccly_pylox&metric=security_rating
+        :target: https://sonarcloud.io/dashboard?id=Excited-ccccly_pylox
+.. image:: https://sonarcloud.io/api/project_badges/measure?project=Excited-ccccly_pylox&metric=ncloc
+        :target: https://sonarcloud.io/dashboard?id=Excited-ccccly_pylox
+
 Lox language implemented in Python. Inspired by `Bob Nystrom`_'s `Crafting Interpreters`_
 
 .. _Bob Nystrom: https://github.com/munificent
