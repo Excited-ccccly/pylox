@@ -8,8 +8,16 @@ install:
   - pip install -r requirements.txt
   - pip install -r requirements.dev.txt
 
+addons:
+  sonarcloud:
+    organization: "excited-ccccly-github" # the key of the org you chose at step #3
 # Command to run tests, e.g. python setup.py test
 script:
   - make coverage
+  - sonar-scanner
+
+cache:
+  directories:
+    - '$HOME/.sonar/cache'
 
 
