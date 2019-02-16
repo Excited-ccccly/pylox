@@ -113,7 +113,7 @@ class Resolver(ExprVisitor, StmtVisitor):
     self.__resolve(expr.object)
 
   def visitSuperExpr(self, expr):
-    if self.current_class = ClassType.NONE:
+    if self.current_class == ClassType.NONE:
       error_handler.resolve_error(expr.keyword, "Cannot use 'super' outside of a class.")
     elif self.current_class != ClassType.SUBCLASS:
       error_handler.resolve_error(expr.keyword, "Cannot use 'super' in a class with no superclass.")

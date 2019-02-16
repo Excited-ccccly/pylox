@@ -2,31 +2,28 @@
 pylox
 =====
 
+Lox language implemented in Python. Inspired by `Bob Nystrom`_'s `Crafting Interpreters`_
 
-.. image:: https://img.shields.io/pypi/v/pylox.svg
-        :target: https://pypi.python.org/pypi/pylox
-
-.. image:: https://img.shields.io/travis/excited-ccccly/pylox.svg
-        :target: https://travis-ci.org/excited-ccccly/pylox
-
-.. image:: https://readthedocs.org/projects/pylox/badge/?version=latest
-        :target: https://pylox.readthedocs.io/en/latest/?badge=latest
-        :alt: Documentation Status
-
-
-
-
-Lox language implemented in Python
-
-
-* Free software: MIT license
-* Documentation: https://pylox.readthedocs.io.
-
+.. _Bob Nystrom: https://github.com/munificent
+.. _Crafting Interpreters: http://craftinginterpreters.com/
 
 Features
 --------
 
-* TODO
+* booleans, numbers, strings and nil datatypes
+* dynamic typing
+* control flow. if, while, for statement
+* closures
+* recursion
+* class
+* inheritance
+
+more at `Link examples <https://github.com/Excited-ccccly/pylox/tree/master/tests/data/interpreter>`_
+
+Know Issues
+-----------
+
+* In REPL mode, user have to input a blank line to get code interpreted.
 
 Credits
 -------

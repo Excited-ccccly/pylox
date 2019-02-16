@@ -11,53 +11,38 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-requirements = ['Click>=6.0', ]
+with open('requirements.txt') as f:
+    reqs = f.read().split('\n')
 
-setup_requirements = []
+with open('requirements.dev.txt') as f:
+    dev_reqs = f.read().split('\n')
 
-test_requirements = [
-"pip==18.1",
-"bumpversion==0.5.3",
-"wheel==0.32.1",
-"watchdog==0.9.0",
-"flake8==3.5.0",
-"tox==3.5.2",
-"coverage==4.5.1",
-"Sphinx==1.8.1",
-"twine==1.12.1",]
+install_requires = [x.strip() for x in reqs if 'git+' not in x]
+dev_requires = [x.strip() for x in dev_reqs if 'git+' not in x]
 
 setup(
     author="Lingyun Chen",
     author_email='geekchenlingyun@outlook.com',
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: MIT License',
-        'Natural Language :: English',
-        "Programming Language :: Python :: 2",
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
     ],
-    description="Lox language implemented inn Python",
+    description="Lox language implemented in Python",
     entry_points={
         'console_scripts': [
             'pylox=pylox.cli:main',
         ],
     },
-    install_requires=requirements,
+    install_requires=install_requires,
     license="MIT license",
     long_description=readme + '\n\n' + history,
     include_package_data=True,
     keywords='pylox',
     name='pylox',
     packages=find_packages(include=['pylox']),
-    setup_requires=setup_requirements,
     test_suite='tests',
-    tests_require=test_requirements,
+    tests_require=dev_requires,
     url='https://github.com/excited-ccccly/pylox',
     version='0.1.0',
     zip_safe=False,

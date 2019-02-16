@@ -2,7 +2,7 @@
 History
 =======
 
-0.1.0 (2019-01-26)
+0.1.0 (2019-02-13)
 ------------------
 
-* Support Lexing
+* A full feature programming language, Lox, come to life

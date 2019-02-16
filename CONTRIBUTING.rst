@@ -64,10 +64,13 @@ Ready to contribute? Here's how to set up `pylox` for local development.
 
     $ git clone git@github.com:your_name_here/pylox.git
 
-3. Install your local copy into a virtualenv. Assuming you have virtualenvwrapper installed, this is how you set up your fork for local development::
+3. Install your local copy into venv
 
-    $ mkvirtualenv pylox
     $ cd pylox/
+    $ mkdir .venv
+    $ python -m venv .venv
+    $ source .venv/bin/activate
+    $ pip install -r requirements.txt & pip install -r requirements.dev.txt
     $ python setup.py develop
 
 4. Create a branch for local development::
@@ -76,14 +79,9 @@ Ready to contribute? Here's how to set up `pylox` for local development.
 
    Now you can make your changes locally.
 
-5. When you're done making changes, check that your changes pass flake8 and the
-   tests, including testing other Python versions with tox::
+5. When you're done making changes, check that your changes pass tests
 
-    $ flake8 pylox tests
-    $ python setup.py test or py.test
-    $ tox
-
-   To get flake8 and tox, just pip install them into your virtualenv.
+    $ python setup.py test
 
 6. Commit your changes and push your branch to GitHub::
 
@@ -112,7 +110,7 @@ Tips
 To run a subset of tests::
 
 
-    $ python -m unittest tests.test_pylox
+    $ python -m unittest tests.test_interpreter
 
 Deploying
 ---------
@@ -124,5 +122,3 @@ Then run::
 $ bumpversion patch # possible: major / minor / patch
 $ git push
 $ git push --tags
-
-Travis will then deploy to PyPI if tests pass.
