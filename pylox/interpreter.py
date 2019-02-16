@@ -27,7 +27,7 @@ class Interpreter(ExprVisitor, StmtVisitor):
 
   def resolve(self, expr, depth:int):
     self.locals[expr] = depth
-    
+
   def evaluate(self, expr):
     return expr.accept(self)
 
@@ -73,7 +73,7 @@ class Interpreter(ExprVisitor, StmtVisitor):
       return float(left) <= float(right)
     elif operator_type == TokenType.BANG_EQUAL:
       return not left == right
-    elif operator_type == TokenType.BANG_EQUAL:
+    elif operator_type == TokenType.EQUAL_EQUAL:
       return left == right
     return None
 
@@ -128,7 +128,7 @@ class Interpreter(ExprVisitor, StmtVisitor):
 
   def visitThisExpr(self, expr):
     return self.__lookup_variable(expr.keyword, expr)
-  
+
   def visitUnaryExpr(self, expr):
     right = self.evaluate(expr.right)
     if expr.operator.type == TokenType.MINUS:
@@ -137,7 +137,7 @@ class Interpreter(ExprVisitor, StmtVisitor):
     elif expr.operator.type == TokenType.BANG:
       return not self.__is_truthy(right)
     return None
-  
+
   def visitVariableExpr(self, expr):
     return self.__lookup_variable(expr.name, expr)
 
@@ -160,7 +160,7 @@ class Interpreter(ExprVisitor, StmtVisitor):
         self.execute(s)
     finally:
       self.environment = previous
-      
+
   def visitBlockStmt(self, stmt):
     block_environment = Environment(enclosing=self.environment)
     self.execute_block(stmt.statements, block_environment)
@@ -191,7 +191,7 @@ class Interpreter(ExprVisitor, StmtVisitor):
   def visitFunctionStmt(self, stmt):
     func = LoxFunction(stmt, self.environment, False)
     self.environment.define(stmt.name.lexeme, func)
-      
+
   def visitIfStmt(self, stmt):
     c = self.evaluate(stmt.condition)
     if self.__is_truthy(c):
@@ -204,7 +204,7 @@ class Interpreter(ExprVisitor, StmtVisitor):
     if stmt.value:
       value = self.evaluate(stmt.value)
     raise ReturnValue(value)
-    
+
   def visitWhileStmt(self, stmt):
     while self.__is_truthy(self.evaluate(stmt.condition)):
       self.execute(stmt.body)
