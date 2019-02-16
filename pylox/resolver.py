@@ -14,27 +14,27 @@ class Resolver(ExprVisitor, StmtVisitor):
     self.current_function = FunctionType.NONE
     self.current_class = ClassType.NONE
 
-  def visitBlockStmt(self, stmt):
+  def visit_block_stmt(self, stmt):
     self.__begin_scope()
     self.resolve(stmt.statements)
     self.__end_scope()
 
-  def visitVarStmt(self, stmt):
+  def visit_var_stmt(self, stmt):
     self.__declare(stmt.name)
     if stmt.initializer:
       self.__resolve(stmt.initializer)
     self.__define(stmt.name)
 
-  def visitVariableExpr(self, expr):
+  def visit_variable_expr(self, expr):
     if self.scopes and self.scopes[-1].get(expr.name.lexeme) == False:
       error_handler.resolve_error(expr.name, "Cannot read local variable in its own initializer.")
     self.__resolve_local(expr, expr.name)
 
-  def visitAssignExpr(self, expr):
+  def visit_assign_expr(self, expr):
     self.__resolve(expr.value)
     self.__resolve_local(expr, expr.name)
 
-  def visitClassStmt(self, stmt):
+  def visit_class_stmt(self, stmt):
     enclosing_class = self.current_class
     self.current_class = ClassType.CLASS
     self.__declare(stmt.name)
@@ -54,27 +54,27 @@ class Resolver(ExprVisitor, StmtVisitor):
       self.__resolve_function(method, func_type)
     self.__end_scope()
     if stmt.superclass:
-      self.__end_scope()    
+      self.__end_scope()
     self.current_class = enclosing_class
-    
-  def visitFunctionStmt(self, stmt):
+
+  def visit_function_stmt(self, stmt):
     self.__declare(stmt.name)
     self.__define(stmt.name)
     self.__resolve_function(stmt, FunctionType.FUNCTION)
 
-  def visitExpressionStmt(self, stmt):
+  def visit_expression_stmt(self, stmt):
     self.__resolve(stmt.expression)
 
-  def visitIfStmt(self, stmt):
+  def visit_if_stmt(self, stmt):
     self.__resolve(stmt.condition)
     self.__resolve(stmt.thenBranch)
     if stmt.elseBranch:
       self.__resolve(stmt.elseBranch)
-  
-  def visitPrintStmt(self, stmt):
+
+  def visit_print_stmt(self, stmt):
     self.__resolve(stmt.expression)
 
-  def visitReturnStmt(self, stmt):
+  def visit_return_stmt(self, stmt):
     if self.current_function == FunctionType.NONE:
       error_handler.resolve_error(stmt.keyword, "Cannot return from top-level code.")
     if stmt.value:
@@ -82,50 +82,50 @@ class Resolver(ExprVisitor, StmtVisitor):
         error_handler.resolve_error(stmt.keyword, "Cannot return a value from an initializer.")
       self.__resolve(stmt.value)
 
-  def visitWhileStmt(self, stmt):
+  def visit_while_stmt(self, stmt):
     self.__resolve(stmt.condition)
     self.__resolve(stmt.body)
 
-  def visitBinaryExpr(self, expr):
+  def visit_binary_expr(self, expr):
     self.__resolve(expr.left)
     self.__resolve(expr.right)
 
-  def visitCallExpr(self, expr):
+  def visit_call_expr(self, expr):
     self.__resolve(expr.callee)
     for argument in expr.arguments:
       self.__resolve(argument)
-  
-  def visitGetExpr(self, expr):
+
+  def visit_get_expr(self, expr):
     self.__resolve(expr.object)
 
-  def visitGroupingExpr(self, expr):
+  def visit_grouping_expr(self, expr):
     self.__resolve(expr.expression)
 
-  def visitLiteralExpr(self, expr):
+  def visit_literal_expr(self, expr):
     pass
 
-  def visitLogicalExpr(self, expr):
+  def visit_logical_expr(self, expr):
     self.__resolve(expr.left)
     self.__resolve(expr.right)
 
-  def visitSetExpr(self, expr):
+  def visit_set_expr(self, expr):
     self.__resolve(expr.value)
     self.__resolve(expr.object)
 
-  def visitSuperExpr(self, expr):
+  def visit_super_expr(self, expr):
     if self.current_class == ClassType.NONE:
       error_handler.resolve_error(expr.keyword, "Cannot use 'super' outside of a class.")
     elif self.current_class != ClassType.SUBCLASS:
       error_handler.resolve_error(expr.keyword, "Cannot use 'super' in a class with no superclass.")
     self.__resolve_local(expr, expr.keyword)
-  
-  def visitThisExpr(self, expr):
+
+  def visit_this_expr(self, expr):
     if self.current_class == ClassType.NONE:
       error_handler.resolve_error(expr.keyword, "Cannot use 'this' outside of a class.")
       return
     self.__resolve_local(expr, expr.keyword)
 
-  def visitUnaryExpr(self, expr):
+  def visit_unary_expr(self, expr):
     self.__resolve(expr.right)
 
   def __resolve_function(self, func_stmt, func_type):
@@ -133,8 +133,8 @@ class Resolver(ExprVisitor, StmtVisitor):
     self.current_function = func_type
     self.__begin_scope()
     for param in func_stmt.params:
-      self.__declare(param)
-      self.__define(param)
+      self.__declare(param.name)
+      self.__define(param.name)
     self.resolve(func_stmt.body.statements)
     self.__end_scope()
     self.current_function = enclosing_function
@@ -149,7 +149,7 @@ class Resolver(ExprVisitor, StmtVisitor):
     if self.scopes:
       scope = self.scopes[-1]
       if scope.__contains__(name.lexeme):
-        error_handler.resolve_error(name, "Variable with this name already declared in this scope.")        
+        error_handler.resolve_error(name, "Variable with this name already declared in this scope.")
       scope[name.lexeme] = False
 
   def __define(self, name: Token):

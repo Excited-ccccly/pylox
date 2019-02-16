@@ -17,7 +17,7 @@ class ExprMeta(type):
   def __new__(cls, name, bases, clsdict):
     clsobj = super().__new__(cls, name, bases, clsdict)
     def accept(self, vistor):
-      visit_callable = getattr(vistor, f"visit{name}Expr")
+      visit_callable = getattr(vistor, f"visit_{name.lower()}_expr")
       return visit_callable(self)
     setattr(clsobj, "accept", accept)
     return clsobj
@@ -26,7 +26,7 @@ class StmtMeta(type):
   def __new__(cls, name, bases, clsdict):
     clsobj = super().__new__(cls, name, bases, clsdict)
     def accept(self, vistor):
-      visit_callable = getattr(vistor, f"visit{name}Stmt")
+      visit_callable = getattr(vistor, f"visit_{name.lower()}_stmt")
       return visit_callable(self)
     setattr(clsobj, "accept", accept)
     return clsobj

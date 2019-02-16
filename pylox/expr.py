@@ -60,38 +60,38 @@ from abc import abstractmethod
 
 class ExprVisitor:
   @abstractmethod
-  def visitAssignExpr(self, expr):
+  def visit_assign_expr(self, expr):
     raise NotImplementedError()
   @abstractmethod
-  def visitBinaryExpr(self, expr):
+  def visit_binary_expr(self, expr):
     raise NotImplementedError()
   @abstractmethod
-  def visitCallExpr(self, expr):
-    raise NotImplementedError()    
-  @abstractmethod
-  def visitGetExpr(self, expr):
+  def visit_call_expr(self, expr):
     raise NotImplementedError()
   @abstractmethod
-  def visitGroupingExpr(self, expr):
+  def visit_get_expr(self, expr):
     raise NotImplementedError()
   @abstractmethod
-  def visitLiteralExpr(self, expr):
+  def visit_grouping_expr(self, expr):
     raise NotImplementedError()
   @abstractmethod
-  def visitLogicalExpr(self, expr):
+  def visit_literal_expr(self, expr):
     raise NotImplementedError()
   @abstractmethod
-  def visitSetExpr(self, expr):
+  def visit_logical_expr(self, expr):
     raise NotImplementedError()
   @abstractmethod
-  def visitSuperExpr(self, expr):
+  def visit_set_expr(self, expr):
     raise NotImplementedError()
   @abstractmethod
-  def visitThisExpr(self, expr):
+  def visit_super_expr(self, expr):
     raise NotImplementedError()
   @abstractmethod
-  def visitUnaryExpr(self, expr):
+  def visit_this_expr(self, expr):
     raise NotImplementedError()
   @abstractmethod
-  def visitVariableExpr(self, expr):
-    raise NotImplementedError()    
+  def visit_unary_expr(self, expr):
+    raise NotImplementedError()
+  @abstractmethod
+  def visit_variable_expr(self, expr):
+    raise NotImplementedError()

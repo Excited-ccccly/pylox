@@ -22,40 +22,40 @@ class AstPrinter(ExprVisitor):
     return f"({name} {expr_str})"
 
 
-  def visitAssignExpr(self, expr):
+  def visit_assign_expr(self, expr):
     return self.parenthesize2("=", expr.name.lexeme, expr.value)
-  
-  def visitBinaryExpr(self, expr):
+
+  def visit_binary_expr(self, expr):
     return self.parenthesize(expr.operator.lexeme, expr.left, expr.right)
 
-  def visitCallExpr(self, expr):
+  def visit_call_expr(self, expr):
     return self.parenthesize2("call", expr.callee, expr.arguments)
 
-  def visitGetExpr(self, expr):
+  def visit_get_expr(self, expr):
     return self.parenthesize2(".", expr.object, expr.name.lexeme)
-  
-  def visitGroupingExpr(self, expr):
+
+  def visit_grouping_expr(self, expr):
     return self.parenthesize("group", expr.expression)
 
-  def visitLiteralExpr(self, expr):
+  def visit_literal_expr(self, expr):
     if expr.value is None: return "nil"
     return str(expr.value)
 
-  def visitLogicalExpr(self, expr):
+  def visit_logical_expr(self, expr):
     return self.parenthesize(expr.operator.lexeme, expr.left, expr.right)
 
-  def visitSetExpr(self, expr):
+  def visit_set_expr(self, expr):
     return self.parenthesize2("=",
         expr.object, expr.name.lexeme, expr.value)
 
-  def visitSuperExpr(self, expr):
+  def visit_super_expr(self, expr):
     return self.parenthesize2("super", expr.method)
 
-  def visitThisExpr(self, expr):
+  def visit_this_expr(self, expr):
     return 'this'
 
-  def visitUnaryExpr(self, expr):
+  def visit_unary_expr(self, expr):
     return self.parenthesize(expr.operator.lexeme, expr.right)
 
-  def visitVariableExpr(self, expr):
+  def visit_variable_expr(self, expr):
     return expr.name.lexeme

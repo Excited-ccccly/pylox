@@ -31,7 +31,7 @@ class Interpreter(ExprVisitor, StmtVisitor):
   def evaluate(self, expr):
     return expr.accept(self)
 
-  def visitAssignExpr(self, expr):
+  def visit_assign_expr(self, expr):
     value = self.evaluate(expr.value)
     distance = self.locals.get(expr)
     if distance:
@@ -40,7 +40,7 @@ class Interpreter(ExprVisitor, StmtVisitor):
       self.globals.assign(expr.name.lexeme, value)
     return value
 
-  def visitBinaryExpr(self, expr):
+  def visit_binary_expr(self, expr):
     left = self.evaluate(expr.left)
     right = self.evaluate(expr.right)
     operator_type = expr.operator.type
@@ -77,7 +77,7 @@ class Interpreter(ExprVisitor, StmtVisitor):
       return left == right
     return None
 
-  def visitCallExpr(self, expr):
+  def visit_call_expr(self, expr):
     callee = self.evaluate(expr.callee)
     arguments = [self.evaluate(arg) for arg in expr.arguments]
     if not isinstance(callee, LoxCallable):
@@ -87,16 +87,16 @@ class Interpreter(ExprVisitor, StmtVisitor):
       raise RuntimeError(expr.paren, f"Expected {func.arity()} arguments but got {len(arguments)}.")
     return func.call(self, arguments)
 
-  def visitGetExpr(self, expr):
+  def visit_get_expr(self, expr):
     obj = self.evaluate(expr.object)
     if isinstance(obj, LoxInstance):
       return obj.get(expr.name)
     raise RuntimeError(expr.name, "Only instances have properties.")
 
-  def visitLiteralExpr(self, expr):
+  def visit_literal_expr(self, expr):
     return expr.value
 
-  def visitLogicalExpr(self, expr):
+  def visit_logical_expr(self, expr):
     left_value = self.evaluate(expr.left)
     if expr.operator.type == TokenType.OR:
       if self.__is_truthy(left_value):
@@ -106,10 +106,10 @@ class Interpreter(ExprVisitor, StmtVisitor):
         return left_value
     return self.evaluate(expr.right)
 
-  def visitGroupingExpr(self, expr):
+  def visit_grouping_expr(self, expr):
     return self.evaluate(expr.expression)
 
-  def visitSetExpr(self, expr):
+  def visit_set_expr(self, expr):
     obj = self.evaluate(expr.object)
     if isinstance(obj, LoxInstance):
       value = self.evaluate(expr.value)
@@ -117,7 +117,7 @@ class Interpreter(ExprVisitor, StmtVisitor):
       return value
     raise RuntimeError(expr.name, "Only instances have fields.")
 
-  def visitSuperExpr(self, expr):
+  def visit_super_expr(self, expr):
     distance = self.locals.get(expr)
     superclass: LoxClass = self.environment.get_at(distance, "super")
     instance: LoxInstance = self.environment.get_at(distance - 1, "this")
@@ -126,10 +126,10 @@ class Interpreter(ExprVisitor, StmtVisitor):
       raise RuntimeError(expr.method, f"Undefined property '{expr.method.lexeme}'.")
     return method
 
-  def visitThisExpr(self, expr):
+  def visit_this_expr(self, expr):
     return self.__lookup_variable(expr.keyword, expr)
 
-  def visitUnaryExpr(self, expr):
+  def visit_unary_expr(self, expr):
     right = self.evaluate(expr.right)
     if expr.operator.type == TokenType.MINUS:
       self.__check_number_operands(expr.operator, right)
@@ -138,7 +138,7 @@ class Interpreter(ExprVisitor, StmtVisitor):
       return not self.__is_truthy(right)
     return None
 
-  def visitVariableExpr(self, expr):
+  def visit_variable_expr(self, expr):
     return self.__lookup_variable(expr.name, expr)
 
   def __lookup_variable(self, token, expr):
@@ -148,7 +148,7 @@ class Interpreter(ExprVisitor, StmtVisitor):
     else:
       return self.globals.get(token)
 
-  def visitPrintStmt(self, stmt):
+  def visit_print_stmt(self, stmt):
     value = self.evaluate(stmt.expression)
     print(value)
 
@@ -161,11 +161,11 @@ class Interpreter(ExprVisitor, StmtVisitor):
     finally:
       self.environment = previous
 
-  def visitBlockStmt(self, stmt):
+  def visit_block_stmt(self, stmt):
     block_environment = Environment(enclosing=self.environment)
     self.execute_block(stmt.statements, block_environment)
 
-  def visitClassStmt(self, stmt):
+  def visit_class_stmt(self, stmt):
     superclass = None
     if stmt.superclass:
       superclass = self.evaluate(stmt.superclass)
@@ -185,31 +185,31 @@ class Interpreter(ExprVisitor, StmtVisitor):
       self.environment = self.environment.enclosing
     self.environment.assign(lexeme, klass)
 
-  def visitExpressionStmt(self, stmt):
+  def visit_expression_stmt(self, stmt):
     self.evaluate(stmt.expression)
 
-  def visitFunctionStmt(self, stmt):
+  def visit_function_stmt(self, stmt):
     func = LoxFunction(stmt, self.environment, False)
     self.environment.define(stmt.name.lexeme, func)
 
-  def visitIfStmt(self, stmt):
+  def visit_if_stmt(self, stmt):
     c = self.evaluate(stmt.condition)
     if self.__is_truthy(c):
       self.execute(stmt.thenBranch)
     elif stmt.elseBranch:
       self.execute(stmt.elseBranch)
 
-  def visitReturnStmt(self, stmt):
+  def visit_return_stmt(self, stmt):
     value = None
     if stmt.value:
       value = self.evaluate(stmt.value)
     raise ReturnValue(value)
 
-  def visitWhileStmt(self, stmt):
+  def visit_while_stmt(self, stmt):
     while self.__is_truthy(self.evaluate(stmt.condition)):
       self.execute(stmt.body)
 
-  def visitVarStmt(self, stmt):
+  def visit_var_stmt(self, stmt):
     value = None
     if stmt.initializer:
       value = self.evaluate(stmt.initializer)

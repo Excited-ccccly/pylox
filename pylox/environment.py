@@ -15,7 +15,7 @@ class Environment:
       return
     if self.enclosing:
       return self.enclosing.assign(name, value)
-    raise RuntimeError(f'Undefined variable: {name}')      
+    raise RuntimeError(f'Undefined variable: {name}')
 
   def get(self, token: Token):
     if self.values.__contains__(token.lexeme):
@@ -32,7 +32,7 @@ class Environment:
 
   def __ancestor(self, distance):
     environment = self
-    for i in range(0, distance):
+    for _ in range(0, distance):
       environment = environment.enclosing
     return environment
 

@@ -47,30 +47,29 @@ class While(Stmt):
 
 class StmtVisitor:
   @abstractmethod
-  def visitExpressionStmt(self, expr):
-    raise NotImplementedError()  
-  @abstractmethod
-  def visitPrintStmt(self, expr):
+  def visit_expression_stmt(self, expr):
     raise NotImplementedError()
   @abstractmethod
-  def visitVarStmt(self, expr):
-    raise NotImplementedError()  
+  def visit_print_stmt(self, expr):
+    raise NotImplementedError()
   @abstractmethod
-  def visitBlockStmt(self, expr):
-    raise NotImplementedError()      
+  def visit_var_stmt(self, expr):
+    raise NotImplementedError()
   @abstractmethod
-  def visitClassStmt(self, expr):
-    raise NotImplementedError()          
+  def visit_block_stmt(self, expr):
+    raise NotImplementedError()
   @abstractmethod
-  def visitIfStmt(self, expr):
-    raise NotImplementedError()          
+  def visit_class_stmt(self, expr):
+    raise NotImplementedError()
   @abstractmethod
-  def visitWhileStmt(self, expr):
-    raise NotImplementedError()              
+  def visit_if_stmt(self, expr):
+    raise NotImplementedError()
   @abstractmethod
-  def visitFunctionStmt(self, expr):
-    raise NotImplementedError()                  
+  def visit_while_stmt(self, expr):
+    raise NotImplementedError()
   @abstractmethod
-  def visitReturnStmt(self, expr):
-    raise NotImplementedError()                      
-  
+  def visit_function_stmt(self, expr):
+    raise NotImplementedError()
+  @abstractmethod
+  def visit_return_stmt(self, expr):
+    raise NotImplementedError()

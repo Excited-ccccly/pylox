@@ -13,7 +13,7 @@ class Scanner(object):
     self.tokens = []
     self.start = 0
     self.current = 0
-    self.line = 1    
+    self.line = 1
 
   def scan_tokens(self) -> List[Token]:
     """Lexing
@@ -46,12 +46,12 @@ class Scanner(object):
       else:
         self.add_token(lexeme_token_type_dict[c])
     elif c in (" ", "\r", "\t"):
-      pass
+      return
     elif c == "\n":
       self.line += 1
     elif c in ('"', '\''):
       while self.look_ahead() not in ('"', '\'') and not self.is_at_end():
-        if self.look_ahead() == "\n": self.line += 1 
+        if self.look_ahead() == "\n": self.line += 1
         self.advance()
       if self.is_at_end():
         error_handler.error(self.line, message="Unterminated string.")
@@ -93,7 +93,7 @@ class Scanner(object):
   def peek(self) -> str:
     """Look current char
     """
-    return self.source[self.current]    
+    return self.source[self.current]
 
   def advance(self):
     """Move the cursor to next char
