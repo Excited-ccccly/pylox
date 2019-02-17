@@ -81,13 +81,13 @@ class Scanner(object):
   def look_ahead(self) -> str:
     """Look next char
     """
-    if self.is_at_end(): return "\0"
+    if self.current + 1 >= self.source_length: return "\0"
     return self.source[self.current + 1]
 
   def look_ahead2(self) -> str:
     """Look the second char following current char
     """
-    if self.current + 1 >= self.source_length: return "\0"
+    if self.current + 2 >= self.source_length: return "\0"
     return self.source[self.current + 2]
 
   def peek(self) -> str:
