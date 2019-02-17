@@ -1,0 +1,38 @@
+class S {
+  init(first, last) {
+    this.first = first;
+    this.last = last;
+  }
+}
+class A < S {
+  init(first, last) {
+    super.init(first, last);
+  }
+  sayHi() {
+    print "Hi, " + this.first + " " + this.last + "!";
+  }
+  name() {
+    return "A";
+  }
+}
+var a = A("Dear", "Reader");
+a.name();
+var b = 3;
+while (b > 3 or b < 1) {
+  a.sayHi();
+  b = b - 1;
+}
+{
+  var c;
+  c = 4;
+  if (c > 3) {
+    print c;
+  }
+  else {
+    print c + 1;
+  }
+  if (true) {
+    print "true";
+  }
+}
+

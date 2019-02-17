@@ -1,0 +1,25 @@
+class Expr {
+  accept(visitor) {}
+}
+class AssignExpr < Expr {
+  init(name, value) {
+    this.name = name;
+    this.value = value;
+  }
+  accept(visitor) {
+    visitor.visitAssignExpr(this);
+  }
+}
+
+class ExprVisitor {
+  visitAssignExpr(expr) {}
+}
+class ExprPrintVisitor < ExprVisitor {
+  visitAssignExpr(expr) {
+    print expr.name + "=" + expr.value;
+  }
+}
+
+var assignExpr = AssignExpr("a", "1");
+var exprPrintVisitor = ExprPrintVisitor();
+assignExpr.accept(exprPrintVisitor);

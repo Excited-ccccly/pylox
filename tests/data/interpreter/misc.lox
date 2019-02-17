@@ -1,0 +1,13 @@
+var a = 4;
+var b = 2;
+var c = a/b;
+var d = -c * (a + 1);
+if (d > c and a >= b) {
+  print 2.1;
+}
+else {
+  print a == b;
+}
+if (a == c or b != d) {
+  print b;
+}

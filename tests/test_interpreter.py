@@ -95,3 +95,21 @@ class TestInterpreter(LoxTestBase):
       with self.assertStdout() as output:
         interpreter.interprete(stmts)
         self.assertEqual("A method\n", output.getvalue())
+
+  def test_interpret_visitor_pattern(self):
+    with open("tests/data/interpreter/visitor_pattern_in_lox.lox") as f:
+      stmts = Parser(Scanner(f.read()).scan_tokens()).parse()
+      interpreter = Interpreter()
+      Resolver(interpreter).resolve(stmts)
+      with self.assertStdout() as output:
+        interpreter.interprete(stmts)
+        self.assertEqual("a=1\n", output.getvalue())
+
+  def test_interpret_misc(self):
+    with open("tests/data/interpreter/misc.lox") as f:
+      stmts = Parser(Scanner(f.read()).scan_tokens()).parse()
+      interpreter = Interpreter()
+      Resolver(interpreter).resolve(stmts)
+      with self.assertStdout() as output:
+        interpreter.interprete(stmts)
+        self.assertEqual("False\n2.0\n", output.getvalue())
