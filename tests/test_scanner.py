@@ -1,9 +1,9 @@
 from typing import List
-from unittest import TestCase
+from tests.test_base import LoxTestBase
 from pylox.scanner import Scanner
 from pylox.token import Token, TokenType
 
-class TestScanner(TestCase):
+class TestScanner(LoxTestBase):
   def setUp(self):
     with open("tests/data/test_scanner.lox") as f:
       self.scanner = Scanner(f.read())
