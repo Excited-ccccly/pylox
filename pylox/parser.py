@@ -65,7 +65,7 @@ class Parser:
       initializer = self.__expression()
     self.__consume(TokenType.SEMICOLON, "Expect ';' after variable declaration.")
     return Var(name=name, initializer=initializer)
-    
+
   def __stmt(self):
     if self.__match(TokenType.LEFT_BRACE): return self.__block()
     if self.__match(TokenType.FOR): return self.__for_stmt()
@@ -74,7 +74,7 @@ class Parser:
     if self.__match(TokenType.RETURN): return self.__return_stmt()
     if self.__match(TokenType.WHILE): return self.__while_stmt()
     return self.__expr_stmt()
-  
+
   def __block(self):
     self.__advance()
     stmts = []
@@ -113,8 +113,8 @@ class Parser:
     body = While(condition, body)
     if initializer:
       body = Block(statements=[initializer, body])
-    return body    
-  
+    return body
+
   def __if_stmt(self):
     self.__advance()
     self.__consume(TokenType.LEFT_PAREN, "Expect '(' after 'if'.")
@@ -130,7 +130,7 @@ class Parser:
     self.__advance()
     expr = self.__expression()
     self.__consume(expected=TokenType.SEMICOLON, err_msg="Expect ';' after statement.")
-    return Print(expr)    
+    return Print(expr)
 
   def __return_stmt(self):
     keyword = self.__peek()
@@ -150,7 +150,7 @@ class Parser:
     self.__consume(TokenType.RIGHT_PAREN, "Expect ')' after if condition.")
     body = self.__stmt()
     return While(condition, body)
-      
+
   def __expression(self) -> Expr:
     return self.__assignment()
 
@@ -276,9 +276,8 @@ class Parser:
       value = self.__peek().literal
       self.__advance()
       return Literal(value)
-    if self.__match(TokenType.LEFT_PAREN):
+    if self.__match_then_advance(TokenType.LEFT_PAREN):
       expr = self.__expression()
-      self.__advance()
       self.__consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.")
       return Grouping(expr)
     if self.__match(TokenType.IDENTIFIER):
@@ -287,7 +286,7 @@ class Parser:
       return Variable(name=variable)
 
   def __synchronize(self):
-    while self.__is_at_end():
+    while not self.__is_at_end():
       if self.__match_then_advance(TokenType.SEMICOLON):
         return
       if self.__match(TokenType.CLASS, TokenType.FUN, TokenType.VAR, TokenType.FOR,
@@ -311,8 +310,8 @@ class Parser:
       return token
     else:
       error_handler.parse_error(self.__peek(), err_msg)
-      raise ParseError(err_msg)    
-  
+      raise ParseError(err_msg)
+
   def __check(self, token_type: TokenType) -> bool:
     if self.__is_at_end(): return False
     return self.__peek().type == token_type
