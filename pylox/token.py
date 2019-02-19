@@ -1,7 +1,7 @@
 from enum import Enum, auto
 
 class TokenType(Enum):
-  # Single-character tokens.                      
+  # Single-character tokens.
   LEFT_PAREN = "("
   RIGHT_PAREN = ")"
   LEFT_BRACE = "{"
@@ -13,29 +13,29 @@ class TokenType(Enum):
   SEMICOLON = ";"
   SLASH = "/"
   STAR = "*"
-  
 
-  # One or two character tokens.                  
+
+  # One or two character tokens.
   BANG = "!"
   BANG_EQUAL = "!="
-                                 
+
   EQUAL = "="
   EQUAL_EQUAL = "=="
-                               
+
   GREATER = ">"
   GREATER_EQUAL = ">="
-                           
+
   LESS = "<"
   LESS_EQUAL = "<="
-                                 
 
-  # Literals.                                     
+
+  # Literals.
   IDENTIFIER = auto()
   STRING = auto()
   NUMBER = auto()
-                       
 
-  # Keywords.                                     
+
+  # Keywords.
   AND = "and"
   CLASS = "class"
   ELSE = "else"
@@ -45,7 +45,7 @@ class TokenType(Enum):
   IF = "if"
   NIL = "nil"
   OR = "or"
-   
+
   PRINT = "print"
   RETURN = "return"
   SUPER = "super"
@@ -56,7 +56,8 @@ class TokenType(Enum):
 
   EOF = auto()
 
-lexeme_token_type_dict = { member.value: member for name, member in TokenType.__members__.items() }  
+# value to TokenType dict
+lexeme_token_type_dict = { member.value: member for name, member in TokenType.__members__.items() }
 
 class Token(object):
   def __init__(self, token_type: TokenType, lexeme: str, literal, line: int):

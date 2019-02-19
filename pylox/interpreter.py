@@ -8,6 +8,9 @@ from pylox.lox_function import LoxFunction
 from pylox.lox_class import LoxClass, LoxInstance
 
 class Interpreter(ExprVisitor, StmtVisitor):
+  """interpret the ast tree.
+  it implement ExprVisitor and StmtVisitor visitor interface.
+  """
 
   def __init__(self):
     self.globals = Environment()

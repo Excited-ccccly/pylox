@@ -3,6 +3,8 @@ from pylox.token import Token, TokenType, lexeme_token_type_dict
 from pylox.error import error_handler
 
 class Scanner(object):
+  """scan source code to get a list of tokens
+  """
 
   def __init__(self, source: str):
     """

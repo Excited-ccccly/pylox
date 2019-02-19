@@ -15,13 +15,15 @@ from pylox.resolver import Resolver
 def main(file=None):
   """Console script for pylox."""
   if not file:
-      run_repr()
+      run_repl()
   run_file(file)
   return 0
 
 
-def run_repr():
-
+def run_repl():
+  """repl mode.
+  Known issue here: user have to input a blank line to get code interpreted.
+  """
   while True:
     print("> ", end="")
     lines = []
@@ -31,16 +33,20 @@ def run_repr():
             lines.append(line)
         else:
             break
-    code = '\n'.join(lines)    
+    code = '\n'.join(lines)
     run(code)
 
 
 def run_file(file):
+  """interpret a file
+  """
   with open(file) as f:
       run(f.read())
 
 interpreter = Interpreter()
 def run(source: str):
+  """interpret source code
+  """
   tokens = Scanner(source).scan_tokens()
   stmts = Parser(tokens).parse()
   if error_handler.had_error: return

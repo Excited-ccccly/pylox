@@ -37,17 +37,25 @@ Features
 * class
 * inheritance
 
-more at `Link examples <https://github.com/Excited-ccccly/pylox/tree/master/tests/data/interpreter>`_
+more at `examples <https://github.com/Excited-ccccly/pylox/tree/master/tests/data/interpreter>`_
+
+Developer Guide
+_______________
+
+Make sure you have python 3.7 installed, other versions are not tested.
+Here I use python venv, and I highly suggest you do also::
+
+    $ git clone https://github.com/Excited-ccccly/pylox
+    $ cd pylox/
+    $ mkdir .venv
+    $ python -m venv .venv
+    $ source .venv/bin/activate
+    $ pip install -r requirements.txt & pip install -r requirements.dev.txt
+    $ python setup.py develop
+
+more at `CONTRIBUTING <https://github.com/Excited-ccccly/pylox/blob/master/CONTRIBUTING.rst>`_
 
 Know Issues
 -----------
 
 * In REPL mode, user have to input a blank line to get code interpreted.
-
-Credits
--------
-
-This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
-
-.. _Cookiecutter: https://github.com/audreyr/cookiecutter
-.. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage

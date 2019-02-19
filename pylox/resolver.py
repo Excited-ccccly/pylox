@@ -7,6 +7,9 @@ from pylox.token import Token, TokenType
 from pylox.error import error_handler
 
 class Resolver(ExprVisitor, StmtVisitor):
+  """A semantic analyzer to figure out how many hops between a variable's declaration and usage.
+  resolver will put those hops data into interpreter.
+  """
 
   def __init__(self, interpreter):
     self.interpreter = interpreter

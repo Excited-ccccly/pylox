@@ -64,7 +64,7 @@ Ready to contribute? Here's how to set up `pylox` for local development.
 
     $ git clone git@github.com:your_name_here/pylox.git
 
-3. Install your local copy into venv
+3. Install your local copy into venv::
 
     $ cd pylox/
     $ mkdir .venv

@@ -8,12 +8,16 @@ def make_signature(names):
   )
 
 def add_signature(*names):
+  """decorator for adding parameter signature for class
+  """
   def decorate(cls):
     cls.__signature__ = make_signature(names)
     return cls
   return decorate
 
 class ExprMeta(type):
+  """metaclass for expr classes
+  """
   def __new__(cls, name, bases, clsdict):
     clsobj = super().__new__(cls, name, bases, clsdict)
     def accept(self, vistor):
@@ -23,6 +27,8 @@ class ExprMeta(type):
     return clsobj
 
 class StmtMeta(type):
+  """metaclass for stmt classes
+  """
   def __new__(cls, name, bases, clsdict):
     clsobj = super().__new__(cls, name, bases, clsdict)
     def accept(self, vistor):

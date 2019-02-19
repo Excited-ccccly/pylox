@@ -4,6 +4,9 @@ from pylox.expr import ExprVisitor
 from pylox.stmt import StmtVisitor
 
 class AstPrinter(ExprVisitor, StmtVisitor):
+  """print the ast tree.
+  implement ExprVisitor and StmtVisitor visitor interface.
+  """
   def print(self, expr: Expr):
     return expr.accept(self)
 
