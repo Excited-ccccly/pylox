@@ -55,6 +55,21 @@ Here I use python venv, and I highly suggest you do also::
 
 more at `CONTRIBUTING <https://github.com/Excited-ccccly/pylox/blob/master/CONTRIBUTING.rst>`_
 
+Usage
+-----
+
+This project will register a command, **pylox**, in your environment(venv or system).
+If you use venv as I suggested, **pylox** will only be avaliable in venv and you
+have to activate venv before use **pylox** to interpret
+
+Execute **pylox** with a script filepath argument to interpret it ::
+
+    $ pylox tests/data/interpreter/visitor_pattern_in_lox.lox
+
+or without a argument to enter REPL mode ::
+
+    $ pylox
+
 Know Issues
 -----------
 
